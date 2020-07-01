@@ -96,7 +96,6 @@ namespace BindKey.KeyActions
         }
 
         public DefaultKeyAction(DefaultAddOptions options, string GUID = "")
-            : base()
         {
             if (string.IsNullOrWhiteSpace(GUID) == false)
             {
