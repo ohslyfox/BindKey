@@ -36,6 +36,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.ActionGroupBox = new System.Windows.Forms.GroupBox();
+            this.NextActionCombo = new System.Windows.Forms.ComboBox();
+            this.NextActionLabel = new System.Windows.Forms.Label();
             this.KillStartProcess = new System.Windows.Forms.RadioButton();
             this.CheckBoxEnabled = new System.Windows.Forms.CheckBox();
             this.ScreenCapture = new System.Windows.Forms.RadioButton();
@@ -130,16 +132,36 @@
             // 
             // ActionGroupBox
             // 
+            this.ActionGroupBox.Controls.Add(this.NextActionCombo);
+            this.ActionGroupBox.Controls.Add(this.NextActionLabel);
             this.ActionGroupBox.Controls.Add(this.KillStartProcess);
             this.ActionGroupBox.Controls.Add(this.CheckBoxEnabled);
             this.ActionGroupBox.Controls.Add(this.ScreenCapture);
             this.ActionGroupBox.Controls.Add(this.OpenProcess);
             this.ActionGroupBox.Location = new System.Drawing.Point(12, 84);
             this.ActionGroupBox.Name = "ActionGroupBox";
-            this.ActionGroupBox.Size = new System.Drawing.Size(248, 100);
+            this.ActionGroupBox.Size = new System.Drawing.Size(248, 131);
             this.ActionGroupBox.TabIndex = 16;
             this.ActionGroupBox.TabStop = false;
             this.ActionGroupBox.Text = "Action";
+            // 
+            // NextActionCombo
+            // 
+            this.NextActionCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.NextActionCombo.FormattingEnabled = true;
+            this.NextActionCombo.Location = new System.Drawing.Point(77, 97);
+            this.NextActionCombo.Name = "NextActionCombo";
+            this.NextActionCombo.Size = new System.Drawing.Size(165, 21);
+            this.NextActionCombo.TabIndex = 20;
+            // 
+            // NextActionLabel
+            // 
+            this.NextActionLabel.AutoSize = true;
+            this.NextActionLabel.Location = new System.Drawing.Point(6, 100);
+            this.NextActionLabel.Name = "NextActionLabel";
+            this.NextActionLabel.Size = new System.Drawing.Size(65, 13);
+            this.NextActionLabel.TabIndex = 20;
+            this.NextActionLabel.Text = "Next Action:";
             // 
             // KillStartProcess
             // 
@@ -158,7 +180,7 @@
             this.CheckBoxEnabled.AutoSize = true;
             this.CheckBoxEnabled.Checked = true;
             this.CheckBoxEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckBoxEnabled.Location = new System.Drawing.Point(177, 69);
+            this.CheckBoxEnabled.Location = new System.Drawing.Point(177, 0);
             this.CheckBoxEnabled.Name = "CheckBoxEnabled";
             this.CheckBoxEnabled.Size = new System.Drawing.Size(65, 17);
             this.CheckBoxEnabled.TabIndex = 18;
@@ -178,14 +200,14 @@
             // 
             // ButtonSave
             // 
-            this.ButtonSave.Location = new System.Drawing.Point(12, 453);
+            this.ButtonSave.Location = new System.Drawing.Point(12, 310);
             this.ButtonSave.Name = "ButtonSave";
             this.ButtonSave.Size = new System.Drawing.Size(250, 23);
             this.ButtonSave.TabIndex = 17;
             this.ButtonSave.TabStop = false;
             this.ButtonSave.Text = "Save";
             this.ButtonSave.UseVisualStyleBackColor = true;
-            this.ButtonSave.Click += new System.EventHandler(this.button4_Click);
+            this.ButtonSave.Click += new System.EventHandler(this.ButtonSave_Click);
             // 
             // PanelScreenCapture
             // 
@@ -365,6 +387,7 @@
             this.TextBoxKeyCombo.TabStop = false;
             this.TextBoxKeyCombo.Text = "KEY_COMBO";
             this.TextBoxKeyCombo.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.TextBoxKeyCombo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.KeyComboTextBox_KeyDown);
             // 
             // button6
             // 
@@ -381,7 +404,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1131, 573);
+            this.ClientSize = new System.Drawing.Size(1179, 735);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.PanelKillRestartProcess);
             this.Controls.Add(this.PanelScreenCapture);
@@ -440,5 +463,7 @@
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.TextBox TextBoxKeyCombo;
+        private System.Windows.Forms.ComboBox NextActionCombo;
+        private System.Windows.Forms.Label NextActionLabel;
     }
 }

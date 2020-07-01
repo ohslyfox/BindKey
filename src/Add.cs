@@ -1,4 +1,6 @@
-﻿using Gma.System.MouseKeyHook;
+﻿using BindKey.AddOptions;
+using BindKey.KeyActions;
+using Gma.System.MouseKeyHook;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,19 +14,19 @@ namespace BindKey
     internal partial class Add : Form
     {
         #region dimension constants
-        public static readonly Point DIMENSIONS_DEFAULT = new Point(288, 229);
-        public static readonly Point DIMENSIONS_PROCESS = new Point(288, 345);
-        public static readonly Point DIMENSIONS_SCREENCAPTURE = new Point(288, 455);
-        public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_1 = new Point(288, 332);
-        public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_2 = new Point(288, 368);
-        public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_3 = new Point(288, 412);
+        public static readonly Point DIMENSIONS_DEFAULT = new Point(288, 264);
+        public static readonly Point DIMENSIONS_PROCESS = new Point(288, 376);
+        public static readonly Point DIMENSIONS_SCREENCAPTURE = new Point(288, 486);
+        public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_1 = new Point(288, 364);
+        public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_2 = new Point(288, 400);
+        public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_3 = new Point(288, 444);
         public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_PANEL_1 = new Point(248, 69);
         public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_PANEL_2 = new Point(248, 105);
         public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_PANEL_3 = new Point(248, 148);
         #endregion
 
         #region location constants
-        public static readonly Point LOCATION_PANELS = new Point(12, 190);
+        public static readonly Point LOCATION_PANELS = new Point(12, 224);
         #endregion
 
         private enum ContextDependentFormState
@@ -37,8 +39,12 @@ namespace BindKey
         private PickKeyCombo KeyPicker { get; set; }
         private ScreenGrabber Grabber { get; set; }
         private IKeyAction LocalAction;
+        private string LocalActionGUID { get => LocalAction == null ? string.Empty : LocalAction.GUID; }
         private List<IKeyAction> KeyActions;
+        private List<IKeyAction> AvailableNextActions;
         public Keys[] Keys = new Keys[3];
+        public Rectangle? SelectedRegion { get => Grabber.Region; }
+        public IKeyAction NextAction { get => NextActionCombo.SelectedItem as IKeyAction; }
 
         public Add(List<IKeyAction> keyActions, IKeyAction selectedAction)
         {
@@ -47,7 +53,33 @@ namespace BindKey
             this.KeyActions = keyActions;
             this.KeyPicker = null;
             this.LocalAction = selectedAction;
+            this.AvailableNextActions = selectedAction == null ? this.KeyActions : this.KeyActions.Where(ka => KeyActionMeetsDisplayCriteria(ka)).ToList();
+            PopulateNextActions();
             PopulateSelectedAction(selectedAction);
+        }
+
+        private bool KeyActionMeetsDisplayCriteria(IKeyAction ka)
+        {
+            var temp = ka;
+            while (temp != null)
+            {
+                if (temp.GUID == LocalActionGUID || temp.NextActionGUID == LocalActionGUID)
+                {
+                    return false;
+                }
+                temp = temp.NextAction;
+            }
+
+            return true;
+        }
+
+        private void PopulateNextActions()
+        {
+            NextActionCombo.Items.Add(string.Empty);
+            foreach (var action in AvailableNextActions)
+            {
+                NextActionCombo.Items.Add(action);
+            }
         }
 
         private void SetLocations()
@@ -60,55 +92,75 @@ namespace BindKey
 
         private void PopulateSelectedAction(IKeyAction selectedAction)
         {
-            object boxedKeys = null;
             if (selectedAction != null)
             {
                 LocalAction = selectedAction;
-                switch(selectedAction.Type) 
-                {
-                    case ActionTypes.OpenProcess:
-                        OpenProcessAction openProcessAction = selectedAction as OpenProcessAction;
-                        OpenProcess.Checked = true;
-                        boxedKeys = openProcessAction.Keys.Clone();
-                        Keys[0] = ((Keys[])boxedKeys)[0];
-                        Keys[1] = ((Keys[])boxedKeys)[1];
-                        Keys[2] = ((Keys[])boxedKeys)[2];
-                        textBox1.Text = openProcessAction.FilePath;
-                        checkBox1.Checked = openProcessAction.AsAdmin;
-                        CheckBoxEnabled.Checked = openProcessAction.Enabled;
-                        break;
-                    case ActionTypes.ScreenCapture:
-                        ScreenCaptureAction screenCaptureAction = selectedAction as ScreenCaptureAction;
-                        ScreenCapture.Checked = true;
-                        boxedKeys = screenCaptureAction.Keys.Clone();
-                        Keys[0] = ((Keys[])boxedKeys)[0];
-                        Keys[1] = ((Keys[])boxedKeys)[1];
-                        Keys[2] = ((Keys[])boxedKeys)[2];
-                        textBox2.Text = screenCaptureAction.FolderPath;
-                        CheckBoxEnabled.Checked = screenCaptureAction.Enabled;
-                        Grabber = new ScreenGrabber(this, screenCaptureAction.ScreenRegion);
-                        Bitmap bmp = new Bitmap(screenCaptureAction.ScreenRegion.Width, screenCaptureAction.ScreenRegion.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                        Graphics g = Graphics.FromImage(bmp);
-                        g.CopyFromScreen(screenCaptureAction.ScreenRegion.X, screenCaptureAction.ScreenRegion.Y, 0, 0, bmp.Size);
-                        pictureBox1.Image = bmp;
-                        break;
-                    case ActionTypes.KillStartProcess:
-                        KillStartProcessAction killRestartProcessAction = selectedAction as KillStartProcessAction;
-                        KillStartProcess.Checked = true;
-                        boxedKeys = killRestartProcessAction.Keys.Clone();
-                        Keys[0] = ((Keys[])boxedKeys)[0];
-                        Keys[1] = ((Keys[])boxedKeys)[1];
-                        Keys[2] = ((Keys[])boxedKeys)[2];
-                        KillRestartProcessNameTextBox.Text = killRestartProcessAction.ProcessName;
-                        KillRestartRestartCheckBox.Checked = killRestartProcessAction.Restart;
-                        KillRestartAdminCheckbox.Checked = killRestartProcessAction.AsAdmin;
-                        CheckBoxEnabled.Checked = killRestartProcessAction.Enabled;
-                        checkBox2.Checked = killRestartProcessAction.MatchName;
-                        textBox3.Text = killRestartProcessAction.FilePath;
-                        break;
-                }
+                NextActionCombo.SelectedItem = AvailableNextActions.FirstOrDefault(ka => ka.GUID == selectedAction.NextActionGUID);
+                FillFormControlsFromSelectedAction(selectedAction);
             }
             DrawKeyDisplay();
+        }
+
+        private void FillFormControlsFromSelectedAction(IKeyAction selectedAction)
+        {
+            switch (selectedAction.Type)
+            {
+                case ActionTypes.OpenProcess:
+                    FillFormControlsOpenProcessAction(selectedAction);
+                    break;
+                case ActionTypes.ScreenCapture:
+                    FillFormControlsScreenCaptureAction(selectedAction);
+                    break;
+                case ActionTypes.KillStartProcess:
+                    FillFormControlsKillStartsProcessAction(selectedAction);
+                    break;
+            }
+        }
+
+        private void FillFormControlsKillStartsProcessAction(IKeyAction selectedAction)
+        {
+            KillStartProcessAction killRestartProcessAction = selectedAction as KillStartProcessAction;
+            KillStartProcess.Checked = true;
+            object boxedKeys = killRestartProcessAction.Keys.Clone();
+            Keys[0] = ((Keys[])boxedKeys)[0];
+            Keys[1] = ((Keys[])boxedKeys)[1];
+            Keys[2] = ((Keys[])boxedKeys)[2];
+            KillRestartProcessNameTextBox.Text = killRestartProcessAction.ProcessName;
+            KillRestartRestartCheckBox.Checked = killRestartProcessAction.Restart;
+            KillRestartAdminCheckbox.Checked = killRestartProcessAction.AsAdmin;
+            CheckBoxEnabled.Checked = killRestartProcessAction.Enabled;
+            checkBox2.Checked = killRestartProcessAction.MatchName;
+            textBox3.Text = killRestartProcessAction.FilePath;
+        }
+
+        private void FillFormControlsScreenCaptureAction(IKeyAction selectedAction)
+        {
+            ScreenCaptureAction screenCaptureAction = selectedAction as ScreenCaptureAction;
+            ScreenCapture.Checked = true;
+            object boxedKeys = screenCaptureAction.Keys.Clone();
+            Keys[0] = ((Keys[])boxedKeys)[0];
+            Keys[1] = ((Keys[])boxedKeys)[1];
+            Keys[2] = ((Keys[])boxedKeys)[2];
+            textBox2.Text = screenCaptureAction.FolderPath;
+            CheckBoxEnabled.Checked = screenCaptureAction.Enabled;
+            Grabber = new ScreenGrabber(this, screenCaptureAction.ScreenRegion);
+            Bitmap bmp = new Bitmap(screenCaptureAction.ScreenRegion.Width, screenCaptureAction.ScreenRegion.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Graphics g = Graphics.FromImage(bmp);
+            g.CopyFromScreen(screenCaptureAction.ScreenRegion.X, screenCaptureAction.ScreenRegion.Y, 0, 0, bmp.Size);
+            pictureBox1.Image = bmp;
+        }
+
+        private void FillFormControlsOpenProcessAction(IKeyAction selectedAction)
+        {
+            OpenProcessAction openProcessAction = selectedAction as OpenProcessAction;
+            OpenProcess.Checked = true;
+            object boxedKeys = openProcessAction.Keys.Clone();
+            Keys[0] = ((Keys[])boxedKeys)[0];
+            Keys[1] = ((Keys[])boxedKeys)[1];
+            Keys[2] = ((Keys[])boxedKeys)[2];
+            textBox1.Text = openProcessAction.FilePath;
+            checkBox1.Checked = openProcessAction.AsAdmin;
+            CheckBoxEnabled.Checked = openProcessAction.Enabled;
         }
 
         private void AdjustFormSizeOnLoad()
@@ -170,43 +222,24 @@ namespace BindKey
             TextBoxKeyCombo.Text = DefaultKeyAction.GetKeyCombo(this.Keys, true);
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void KeyComboTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (KeyPicker == null && e.KeyCode == System.Windows.Forms.Keys.Back)
+            {
+                this.Keys = new Keys[DefaultKeyAction.KEY_COUNT];
+                DrawKeyDisplay();
+            }
+        }
+
+        private void ButtonSave_Click(object sender, EventArgs e)
         {
             if (ValidateForm())
             {
-                IKeyAction? newAction = null;
-                switch (ResolveSelectedAction())
-                {
-                    case ActionTypes.OpenProcess:
-                        OpenProcessAction openProcessAction = new OpenProcessAction();
-                        openProcessAction.Keys = this.Keys;
-                        openProcessAction.FilePath = textBox1.Text.Trim();
-                        openProcessAction.AsAdmin = checkBox1.Checked;
-                        openProcessAction.Enabled = CheckBoxEnabled.Checked;
-                        newAction = openProcessAction;
-                        break;
-                    case ActionTypes.ScreenCapture:
-                        ScreenCaptureAction screenCaptureAction = new ScreenCaptureAction();
-                        screenCaptureAction.Keys = this.Keys;
-                        screenCaptureAction.FolderPath = textBox2.Text.Trim();
-                        screenCaptureAction.ScreenRegion = (Rectangle)Grabber.CalculateRegion();
-                        screenCaptureAction.Enabled = CheckBoxEnabled.Checked;
-                        newAction = screenCaptureAction;
-                        break;
-                    case ActionTypes.KillStartProcess:
-                        KillStartProcessAction killRestartProcessAction = new KillStartProcessAction();
-                        killRestartProcessAction.Keys = this.Keys;
-                        killRestartProcessAction.ProcessName = KillRestartProcessNameTextBox.Text.Trim();
-                        killRestartProcessAction.Restart = KillRestartRestartCheckBox.Checked;
-                        killRestartProcessAction.Enabled = CheckBoxEnabled.Checked;
-                        killRestartProcessAction.AsAdmin = KillRestartAdminCheckbox.Checked;
-                        killRestartProcessAction.MatchName = checkBox2.Checked;
-                        killRestartProcessAction.FilePath = textBox3.Text.Trim();
-                        newAction = killRestartProcessAction;
-                        break;
-                }
+                ActionTypes type = ResolveSelectedAction();
+                IAddOptions addOptions = AddOptionsFactory.GetAddOptionsOfType(type, this);
+                IKeyAction newAction = KeyActionFactory.GetNewKeyActionOfType(type, addOptions, LocalActionGUID);
 
-                if (LocalAction == null && newAction != null)
+                if (LocalAction == null)
                 {
                     KeyActions.Add(newAction);
                 }
@@ -220,11 +253,6 @@ namespace BindKey
 
         private bool ValidateForm()
         {
-            if (Keys.All(k => k == System.Windows.Forms.Keys.None))
-            {
-                MessageBox.Show("Error: a key binding must be set.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
             if (Keys.Where(k => k != System.Windows.Forms.Keys.None).Distinct().Count() != Keys.Where(k => k != System.Windows.Forms.Keys.None).Count())
             {
                 MessageBox.Show("Error: duplicate keys in key combination.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -264,18 +292,6 @@ namespace BindKey
                     break;
             }
             return true;
-        }
-
-        private void PickKeyComboClosed(object sender, FormClosedEventArgs e)
-        {
-            foreach (Control c in this.Controls)
-            {
-                c.Enabled = true;
-            }
-            button6.Enabled = true;
-            DrawKeyDisplay();
-            TextBoxKeyCombo.Select(TextBoxKeyCombo.Text.Length, 0);
-            KeyPicker = null;
         }
 
         private void CreatePickKeyComboForm()
@@ -460,10 +476,10 @@ namespace BindKey
                     AddForm.button5.Text = "Select Region";
                     AddForm.button5.Enabled = true;
 
-                    Rectangle? rectangle = CalculateRegion();
-                    if (rectangle != null)
+                    this.Region = CalculateRegion();
+                    if (Region != null)
                     {
-                        Rectangle rec = (Rectangle)rectangle;
+                        Rectangle rec = (Rectangle)Region;
                         Bitmap bmp = new Bitmap(rec.Width, rec.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                         Graphics g = Graphics.FromImage(bmp);
                         g.CopyFromScreen(rec.X, rec.Y, 0, 0, bmp.Size);

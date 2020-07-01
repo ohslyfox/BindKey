@@ -62,13 +62,22 @@
     <Compile Include="Add.Designer.cs">
       <DependentUpon>Add.cs</DependentUpon>
     </Compile>
+    <Compile Include="AddOptions\AddOptions.cs" />
+    <Compile Include="AddOptions\AddOptionsFactory.cs" />
+    <Compile Include="AddOptions\KillStartProcessOptions.cs" />
+    <Compile Include="AddOptions\OpenProcessOptions.cs" />
+    <Compile Include="AddOptions\ScreenCaptureOptions.cs" />
     <Compile Include="BindKey.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="BindKey.Designer.cs">
       <DependentUpon>BindKey.cs</DependentUpon>
     </Compile>
-    <Compile Include="KeyAction.cs" />
+    <Compile Include="KeyActions\KeyAction.cs" />
+    <Compile Include="KeyActions\KeyActionFactory.cs" />
+    <Compile Include="KeyActions\KillStartProcessAction.cs" />
+    <Compile Include="KeyActions\OpenProcessAction.cs" />
+    <Compile Include="KeyActions\ScreenCaptureAction.cs" />
     <Compile Include="PrettyKeys.cs" />
     <Compile Include="Profile.cs">
       <SubType>Form</SubType>

@@ -1,11 +1,11 @@
 ﻿using Gma.System.MouseKeyHook;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using System.Linq;
+using BindKey.KeyActions;
 
 namespace BindKey
 {
@@ -56,7 +56,7 @@ namespace BindKey
                     loadedData.Add(s);
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 EnableDisableNonProfileControls(false);
             }
@@ -105,12 +105,37 @@ namespace BindKey
                     ProfileComboBox.Items.Add(profile);
                 }
                 ProfileComboBox.Text = selectedProfileName;
+                UpdateNextActions();
                 DrawListView();
                 AddListeners();
             }
             else
             {
                 EnableDisableNonProfileControls(false);
+            }
+        }
+
+        private void UpdateNextActions()
+        {
+            foreach (var keyActionList in ProfileKeyActions.Values)
+            {
+                UpdateNextActionsInGivenList(keyActionList);
+            }
+        }
+
+        private void UpdateNextActionsInGivenList(List<IKeyAction> keyActions)
+        {
+            foreach (var keyAction in keyActions)
+            {
+                var nextAction = keyActions.FirstOrDefault(ka => ka.GUID == keyAction.NextActionGUID);
+                if (nextAction != null)
+                {
+                    keyAction.SetNextAction(nextAction);
+                }
+                else
+                {
+                    keyAction.SetNextAction(null);
+                }
             }
         }
 
@@ -131,114 +156,10 @@ namespace BindKey
         {
             try
             {
-                var rx = new System.Text.RegularExpressions.Regex("\\|\\|\\|\\|\\|");
-                string[] parts = rx.Split(line);
-                switch ((ActionTypes)Enum.Parse(typeof(ActionTypes), parts[0], true))
-                {
-                    case ActionTypes.OpenProcess:
-                        CreateOpenProcessNode(profileList, parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]);
-                        break;
-                    case ActionTypes.ScreenCapture:
-                        CreateScreenCaptureNode(profileList, parts[1], parts[2], parts[3], parts[4], parts[5], parts[6], parts[7], parts[8], parts[9]);
-                        break;
-                    case ActionTypes.KillStartProcess:
-                        CreateKillRestartProcessNode(profileList, parts);
-                        break;
-                }
+                string[] parts = DefaultKeyAction.DELIMITER_REGEX.Split(line);
+                profileList.Add(KeyActionFactory.GetNewKeyActionOfType(parts));
             }
-            catch (Exception ex)
-            {
-                // do nothing
-            }
-        }
-
-        private void CreateKillRestartProcessNode(List<IKeyAction> profileList, string[] parts)
-        {
-            try
-            {
-                KillStartProcessAction killRestartProcessAction = new KillStartProcessAction();
-                Keys[] keys = new Keys[3];
-                keys[0] = (Keys)Enum.Parse(typeof(Keys), parts[1], true);
-                keys[1] = (Keys)Enum.Parse(typeof(Keys), parts[2], true);
-                keys[2] = (Keys)Enum.Parse(typeof(Keys), parts[3], true);
-                killRestartProcessAction.Keys = keys;
-                killRestartProcessAction.Enabled = bool.Parse(parts[4]);
-                killRestartProcessAction.ProcessName = parts[5];
-                killRestartProcessAction.Restart = bool.Parse(parts[6]);
-                killRestartProcessAction.AsAdmin = bool.Parse(parts[7]);
-                killRestartProcessAction.MatchName = bool.Parse(parts[8]);
-                killRestartProcessAction.FilePath = parts[9];
-                profileList.Add(killRestartProcessAction);
-            }
-            catch (Exception e)
-            {
-                // do nothing
-            }
-        }
-
-        private void CreateScreenCaptureNode(List<IKeyAction> profileList, string key1, string key2, string key3, string rX, string rY, string rW, string rH, string folderPath, string enabled)
-        {
-            try
-            {
-                ScreenCaptureAction screenCaptureAction = new ScreenCaptureAction();
-                Keys[] keys = new Keys[3];
-                keys[0] = (Keys)Enum.Parse(typeof(Keys), key1, true);
-                keys[1] = (Keys)Enum.Parse(typeof(Keys), key2, true);
-                keys[2] = (Keys)Enum.Parse(typeof(Keys), key3, true);
-                screenCaptureAction.Keys = keys;
-                Rectangle rec = new Rectangle();
-                if (Int32.TryParse(rX, out int res))
-                {
-                    rec.X = res;
-                }
-                if (Int32.TryParse(rY, out res))
-                {
-                    rec.Y = res;
-                }
-                if (Int32.TryParse(rW, out res))
-                {
-                    rec.Width = res;
-                }
-                if (Int32.TryParse(rH, out res))
-                {
-                    rec.Height = res;
-                }
-                if (Boolean.TryParse(enabled, out bool en))
-                {
-                    screenCaptureAction.Enabled = en;
-                }
-                screenCaptureAction.ScreenRegion = rec;
-                screenCaptureAction.FolderPath = folderPath;
-                profileList.Add(screenCaptureAction);
-            }
-            catch (Exception e)
-            {
-                // do nothing
-            }
-        }
-
-        private void CreateOpenProcessNode(List<IKeyAction> profileList, string key1, string key2, string key3, string filePath, string asAdmin, string enabled)
-        {
-            try
-            {
-                OpenProcessAction openProcessAction = new OpenProcessAction();
-                Keys[] keys = new Keys[3];
-                keys[0] = (Keys)Enum.Parse(typeof(Keys), key1, true);
-                keys[1] = (Keys)Enum.Parse(typeof(Keys), key2, true);
-                keys[2] = (Keys)Enum.Parse(typeof(Keys), key3, true);
-                openProcessAction.Keys = keys;
-                openProcessAction.FilePath = filePath;
-                if (Boolean.TryParse(asAdmin, out bool admin))
-                {
-                    openProcessAction.AsAdmin = admin;
-                }
-                if (Boolean.TryParse(enabled, out bool en))
-                {
-                    openProcessAction.Enabled = en;
-                }
-                profileList.Add(openProcessAction);
-            }
-            catch (Exception e)
+            catch (Exception)
             {
                 // do nothing
             }
@@ -266,7 +187,7 @@ namespace BindKey
                     sw.Close();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show($"Could not save to file {FilePath}.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -289,15 +210,15 @@ namespace BindKey
 
                 // bind key-combos to actions
                 Dictionary<Combination, Action> combos = new Dictionary<Combination, Action>();
-                foreach (IKeyAction keyAction in CurrentKeyActionList.Where(ka => ka.Enabled))
+                foreach (IKeyAction keyAction in CurrentKeyActionList.Where(ka => ka.Enabled && string.IsNullOrWhiteSpace(ka.KeyCombo) == false))
                 {
                     Combination combination = Combination.FromString(keyAction.KeyCombo);
-                    Action action = keyAction.ExecuteAction;
+                    Action action = keyAction.ExecuteActions;
                     combos[combination] = action;
                 }
                 m_GlobalHook.OnCombination(combos);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // do nothing
             }
@@ -322,25 +243,7 @@ namespace BindKey
                     newItem.Font = fnt;
                 }
 
-                switch (keyAction.Type)
-                {
-                    case ActionTypes.OpenProcess:
-                        OpenProcessAction openProcessAction = keyAction as OpenProcessAction;
-                        string filePath = openProcessAction.FilePath;
-                        filePath += openProcessAction.AsAdmin ? " as administrator" : "";
-                        newItem.SubItems.Add($"Open {filePath}");
-                        break;
-                    case ActionTypes.ScreenCapture:
-                        ScreenCaptureAction screenCaptureAction = keyAction as ScreenCaptureAction;
-                        string folderPath = screenCaptureAction.FolderPath;
-                        newItem.SubItems.Add($"Capture {screenCaptureAction.ScreenRegion.Width}x{screenCaptureAction.ScreenRegion.Height} to {(folderPath == "" ? "default folder" : folderPath)}");
-                        break;
-                    case ActionTypes.KillStartProcess:
-                        KillStartProcessAction killRestartProcessAction = keyAction as KillStartProcessAction;
-                        string endPart = killRestartProcessAction.Restart ? $" and {(killRestartProcessAction.MatchName ? "restart" : ("start " + killRestartProcessAction.FilePath))}{(killRestartProcessAction.AsAdmin ? " as administrator" : string.Empty)}" : string.Empty;
-                        newItem.SubItems.Add($"Kill {killRestartProcessAction.ProcessName}{endPart}");
-                        break;
-                }
+                newItem.SubItems.Add(keyAction.ToString());
             }
             listView1.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.ColumnContent);
             listView1.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.HeaderSize);
@@ -359,6 +262,7 @@ namespace BindKey
         private void AddFormClosed(object sender, FormClosedEventArgs e)
         {
             this.BringToFront();
+            UpdateNextActionsInGivenList(this.CurrentKeyActionList);
             AddListeners();
             DrawListView();
             AddForm = null;
@@ -391,6 +295,7 @@ namespace BindKey
             {
                 RecreateKeyboardHook();
                 CurrentKeyActionList.Remove(CurrentKeyActionList[listView1.SelectedItems[0].Index]);
+                UpdateNextActionsInGivenList(this.CurrentKeyActionList);
                 AddListeners();
                 DrawListView();
             }
@@ -463,7 +368,7 @@ namespace BindKey
                     EnableDisableNonProfileControls(true);
                 }
             }
-            catch (Exception exc)
+            catch (Exception)
             {
                 // do nothing
             }

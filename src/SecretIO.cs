@@ -116,7 +116,7 @@ namespace BindKey
                             }
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         return String.Empty;
                     }

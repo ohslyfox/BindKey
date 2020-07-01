@@ -1,0 +1,55 @@
+﻿using BindKey.AddOptions;
+using System;
+
+namespace BindKey.KeyActions
+{
+    internal class KeyActionFactory
+    {
+        public static IKeyAction GetNewKeyActionOfType(ActionTypes type, IAddOptions options, string GUID = "")
+        {
+            IKeyAction? res = null;
+
+            switch (type)
+            {
+                case ActionTypes.OpenProcess:
+                    res = new OpenProcessAction(options as OpenProcessOptions, GUID);
+                    break;
+                case ActionTypes.ScreenCapture:
+                    res = new ScreenCaptureAction(options as ScreenCaptureOptions, GUID);
+                    break;
+                case ActionTypes.KillStartProcess:
+                    res = new KillStartProcessAction(options as KillStartProcessOptions, GUID);
+                    break;
+                default:
+                    Console.WriteLine($"DEV ERROR: could not create key action from factory of type {type}.");
+                    Environment.Exit(1);
+                    break;
+            }
+            return res;
+        }
+
+        public static IKeyAction GetNewKeyActionOfType(string[] parts)
+        {
+            IKeyAction? res = null;
+            ActionTypes type = (ActionTypes)Enum.Parse(typeof(ActionTypes), parts[0], true);
+
+            switch (type)
+            {
+                case ActionTypes.OpenProcess:
+                    res = new OpenProcessAction(parts);
+                    break;
+                case ActionTypes.ScreenCapture:
+                    res = new ScreenCaptureAction(parts);
+                    break;
+                case ActionTypes.KillStartProcess:
+                    res = new KillStartProcessAction(parts);
+                    break;
+                default:
+                    Console.WriteLine($"DEV ERROR: could not create key action from factory of type {type}.");
+                    Environment.Exit(1);
+                    break;
+            }
+            return res;
+        }
+    }
+}

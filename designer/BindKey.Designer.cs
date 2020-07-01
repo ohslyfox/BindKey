@@ -199,7 +199,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(423, 200);
+            this.ClientSize = new System.Drawing.Size(423, 203);
             this.Controls.Add(this.ProfileRemove);
             this.Controls.Add(this.ProfileAdd);
             this.Controls.Add(this.label2);

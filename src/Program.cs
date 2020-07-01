@@ -70,7 +70,7 @@ namespace BindKey
                             ExecutableFilePath = filePath
                         });
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     // do nothing
                 }
