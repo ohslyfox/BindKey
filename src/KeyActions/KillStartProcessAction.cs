@@ -1,5 +1,6 @@
 ﻿using BindKey.AddOptions;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -12,15 +13,19 @@ namespace BindKey.KeyActions
         public string FilePath { get; }
         public bool AsAdmin { get; }
         public bool MatchName { get; }
-
         public override ActionTypes Type { get => ActionTypes.KillStartProcess; }
-        public override string SaveString
+
+        protected override List<string> SaveOrder
         {
             get
             {
-                return $"{Type.ToString()}{DELIMITER}{GUID}{DELIMITER}{NextActionGUID}{DELIMITER}{Keys[0].ToString()}{DELIMITER}{Keys[1].ToString()}{DELIMITER}" +
-                       $"{Keys[2].ToString()}{DELIMITER}{Enabled.ToString()}{DELIMITER}{ProcessName}{DELIMITER}{Restart.ToString()}{DELIMITER}" +
-                       $"{AsAdmin.ToString()}{DELIMITER}{MatchName.ToString()}{DELIMITER}{FilePath}";
+                List<string> res = new List<string>(base.SaveOrder);
+                res.AddRange(new List<string>
+                {
+                    this.ProcessName, this.Restart.ToString(), AsAdmin.ToString(),
+                    this.MatchName.ToString(), this.FilePath
+                });
+                return res;
             }
         }
 
@@ -82,7 +87,7 @@ namespace BindKey.KeyActions
         {
             return $"Kill {this.ProcessName} " +
                    $"{(this.Restart ? "and " + (this.MatchName ? "restart " : "start " + this.FilePath) + (this.AsAdmin ? "as administrator " : string.Empty) : string.Empty)}" +
-                   $"{(this.NextAction != null ? $" -> {this.NextAction.ToString()}": string.Empty)}";
+                   $"{(this.NextKeyAction != null ? $" -> {this.NextKeyAction.ToString()}": string.Empty)}";
         }
     }
 }

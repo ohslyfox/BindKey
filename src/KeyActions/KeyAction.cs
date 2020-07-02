@@ -1,5 +1,6 @@
 ﻿using BindKey.AddOptions;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -22,37 +23,35 @@ namespace BindKey.KeyActions
         string KeyCombo { get; }
         string SaveString { get; }
         string GUID { get; }
-        string NextActionGUID { get; }
+        string NextKeyActionGUID { get; }
         bool Enabled { get; }
         KeyAction Action { get; }
-        IKeyAction NextAction { get; }
+        IKeyAction NextKeyAction { get; }
         void SetNextAction(IKeyAction action);
         void ExecuteActions();
     }
 
     internal abstract class DefaultKeyAction : IKeyAction
     {
-        public static System.Text.RegularExpressions.Regex DELIMITER_REGEX = new System.Text.RegularExpressions.Regex("\\|\\|\\|\\|\\|");
-        public const string DELIMITER = "|||||"; 
+        public const string DELIMITER = "|||||";
         public const int KEY_COUNT = 3;
+        public static System.Text.RegularExpressions.Regex DELIMITER_REGEX = new System.Text.RegularExpressions.Regex("\\|\\|\\|\\|\\|");
+
+        protected virtual List<string> SaveOrder { get => new List<string> { this.Type.ToString(), this.GUID, this.NextKeyActionGUID,
+                                                                             this.Keys[0].ToString(), this.Keys[1].ToString(), this.Keys[2].ToString(),
+                                                                             this.Enabled.ToString() }; }
 
         public abstract ActionTypes Type { get; }
-        public abstract string SaveString { get; }
         protected abstract void KeyActionProcess();
-        public KeyAction Action { get => new KeyAction(KeyActionProcess); }
-        public IKeyAction NextAction { get; private set; } = null;
         
-
+        public KeyAction Action { get => new KeyAction(KeyActionProcess); }
+        public IKeyAction NextKeyAction { get; private set; }
         public bool Enabled { get; private set; }
         public Keys[] Keys { get; private set; } = new Keys[KEY_COUNT];
-        public enum KeyPartEnum
-        {
-            First = 0,
-            Second = 1,
-            Third = 2
-        }
-
+        public string SaveString { get => string.Join(DELIMITER, this.SaveOrder.ToArray()); }
         public string KeyCombo { get => GetKeyCombo(this.Keys, false); }
+        public string GUID { get; } = Guid.NewGuid().ToString();
+        public string NextKeyActionGUID { get; private set; }
 
         public static string GetKeyCombo(Keys[] keys, bool pretty)
         {
@@ -67,31 +66,28 @@ namespace BindKey.KeyActions
             return res;
         }
 
-        public string GUID { get; } = Guid.NewGuid().ToString();
-        public string NextActionGUID { get; private set; } = null;
-
         public void SetNextAction(IKeyAction action)
         {
             if (action != null)
             {
-                this.NextAction = action;
-                this.NextActionGUID = action.GUID;
+                this.NextKeyAction = action;
+                this.NextKeyActionGUID = action.GUID;
             }
             else
             {
-                this.NextAction = null;
-                this.NextActionGUID = null;
+                this.NextKeyAction = null;
+                this.NextKeyActionGUID = null;
             }
         }
 
         public void ExecuteActions()
         {
             Action?.Invoke();
-            var tempNextAction = NextAction;
+            var tempNextAction = NextKeyAction;
             while (tempNextAction != null && tempNextAction.Action != Action)
             {
                 tempNextAction.Action?.Invoke();
-                tempNextAction = tempNextAction.NextAction;
+                tempNextAction = tempNextAction.NextKeyAction;
             }
         }
 
@@ -109,7 +105,7 @@ namespace BindKey.KeyActions
         public DefaultKeyAction(string[] parts)
         {
             this.GUID = parts[1];
-            this.NextActionGUID = parts[2];
+            this.NextKeyActionGUID = parts[2];
             this.Keys = new Keys[3];
             this.Keys[0] = (Keys)Enum.Parse(typeof(Keys), parts[3], true);
             this.Keys[1] = (Keys)Enum.Parse(typeof(Keys), parts[4], true);

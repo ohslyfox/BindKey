@@ -127,7 +127,7 @@ namespace BindKey
         {
             foreach (var keyAction in keyActions)
             {
-                var nextAction = keyActions.FirstOrDefault(ka => ka.GUID == keyAction.NextActionGUID);
+                var nextAction = keyActions.FirstOrDefault(ka => ka.GUID == keyAction.NextKeyActionGUID);
                 if (nextAction != null)
                 {
                     keyAction.SetNextAction(nextAction);

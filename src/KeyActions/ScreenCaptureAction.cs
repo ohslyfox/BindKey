@@ -1,5 +1,6 @@
 ﻿using BindKey.AddOptions;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -10,15 +11,19 @@ namespace BindKey.KeyActions
     {
         public Rectangle ScreenRegion { get; }
         public string FolderPath { get; }
-
         public override ActionTypes Type { get => ActionTypes.ScreenCapture; }
-        public override string SaveString
+
+        protected override List<string> SaveOrder
         {
             get
             {
-                return ($"{Type.ToString()}{DELIMITER}{GUID}{DELIMITER}{NextActionGUID}{DELIMITER}{Keys[0].ToString()}{DELIMITER}{Keys[1].ToString()}" +
-                        $"{DELIMITER}{Keys[2].ToString()}{DELIMITER}{Enabled.ToString()}{DELIMITER}{ScreenRegion.X}{DELIMITER}{ScreenRegion.Y}" +
-                        $"{DELIMITER}{ScreenRegion.Width}{DELIMITER}{ScreenRegion.Height}{DELIMITER}{FolderPath}");
+                List<string> res = new List<string>(base.SaveOrder);
+                res.AddRange(new List<string>
+                {
+                    ScreenRegion.X.ToString(), ScreenRegion.Y.ToString(), ScreenRegion.Width.ToString(),
+                    ScreenRegion.Height.ToString(), this.FolderPath
+                });
+                return res;
             }
         }
 
@@ -91,7 +96,7 @@ namespace BindKey.KeyActions
         {
             return $"Capture {this.ScreenRegion.Width}x{this.ScreenRegion.Height} " +
                    $"to {(this.FolderPath == string.Empty ? "default folder" : this.FolderPath)}" +
-                   $"{(this.NextAction != null ? $" -> {this.NextAction.ToString()}" : string.Empty)}";
+                   $"{(this.NextKeyAction != null ? $" -> {this.NextKeyAction.ToString()}" : string.Empty)}";
         }
     }
 }

@@ -63,11 +63,11 @@ namespace BindKey
             var temp = ka;
             while (temp != null)
             {
-                if (temp.GUID == LocalActionGUID || temp.NextActionGUID == LocalActionGUID)
+                if (temp.GUID == LocalActionGUID || temp.NextKeyActionGUID == LocalActionGUID)
                 {
                     return false;
                 }
-                temp = temp.NextAction;
+                temp = temp.NextKeyAction;
             }
 
             return true;
@@ -95,7 +95,7 @@ namespace BindKey
             if (selectedAction != null)
             {
                 LocalAction = selectedAction;
-                NextActionCombo.SelectedItem = AvailableNextActions.FirstOrDefault(ka => ka.GUID == selectedAction.NextActionGUID);
+                NextActionCombo.SelectedItem = AvailableNextActions.FirstOrDefault(ka => ka.GUID == selectedAction.NextKeyActionGUID);
                 FillFormControlsFromSelectedAction(selectedAction);
             }
             DrawKeyDisplay();

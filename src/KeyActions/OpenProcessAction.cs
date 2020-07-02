@@ -1,5 +1,6 @@
 ﻿using BindKey.AddOptions;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -9,14 +10,18 @@ namespace BindKey.KeyActions
     {
         public string FilePath { get; }
         public bool AsAdmin { get; }
-
         public override ActionTypes Type { get => ActionTypes.OpenProcess; }
-        public override string SaveString
+
+        protected override List<string> SaveOrder
         {
             get
             {
-                return ($"{Type.ToString()}{DELIMITER}{GUID}{DELIMITER}{NextActionGUID}{DELIMITER}{Keys[0].ToString()}{DELIMITER}{Keys[1].ToString()}" +
-                        $"{DELIMITER}{Keys[2].ToString()}{DELIMITER}{Enabled.ToString()}{DELIMITER}{FilePath}{DELIMITER}{AsAdmin.ToString()}");
+                List<string> res = new List<string>(base.SaveOrder);
+                res.AddRange(new List<string>
+                {
+                    this.FilePath, this.AsAdmin.ToString()
+                });
+                return res;
             }
         }
 
@@ -57,7 +62,7 @@ namespace BindKey.KeyActions
         {
             return $"Open {this.FilePath}" +
                    $"{(this.AsAdmin ? " as administrator" : string.Empty)}" +
-                   $"{(this.NextAction != null ? $" -> {this.NextAction.ToString()}" : string.Empty)}";
+                   $"{(this.NextKeyAction != null ? $" -> {this.NextKeyAction.ToString()}" : string.Empty)}";
         }
     }
 }
