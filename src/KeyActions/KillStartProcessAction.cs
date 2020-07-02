@@ -86,7 +86,7 @@ namespace BindKey.KeyActions
         public override string ToString()
         {
             return $"Kill {this.ProcessName} " +
-                   $"{(this.Restart ? "and " + (this.MatchName ? "restart " : "start " + this.FilePath) + (this.AsAdmin ? "as administrator " : string.Empty) : string.Empty)}" +
+                   $"{(this.Restart ? "and " + (this.MatchName ? "restart " : "start " + this.FilePath) + (this.AsAdmin ? " as administrator " : string.Empty) : string.Empty)}" +
                    $"{(this.NextKeyAction != null ? $" -> {this.NextKeyAction.ToString()}": string.Empty)}";
         }
     }
