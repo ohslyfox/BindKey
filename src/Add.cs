@@ -456,7 +456,7 @@ namespace BindKey
         {
             using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
             {
-                folderBrowserDialog.SelectedPath = textBox2.Text == string.Empty ? Directory.GetCurrentDirectory() : textBox2.Text.Contains(".") ? textBox2.Text.Substring(0, textBox2.Text.LastIndexOf("\\")) : textBox2.Text;
+                folderBrowserDialog.SelectedPath = Directory.GetCurrentDirectory();
                 if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
                 {
                     return folderBrowserDialog.SelectedPath;
