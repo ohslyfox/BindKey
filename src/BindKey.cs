@@ -235,7 +235,9 @@ namespace BindKey
             listView1.Items.Clear();
             foreach (IKeyAction keyAction in CurrentKeyActionList)
             {
-                ListViewItem newItem = listView1.Items.Add(DefaultKeyAction.GetKeyCombo(keyAction.Keys, true));
+                var keyCombo = DefaultKeyAction.GetKeyCombo(keyAction.Keys, true);
+                keyCombo = string.IsNullOrWhiteSpace(keyCombo) ? "None" : keyCombo;
+                ListViewItem newItem = listView1.Items.Add(keyCombo);
                 if (keyAction.Enabled == false)
                 {
                     Font fnt = new Font(newItem.Font, FontStyle.Strikeout);

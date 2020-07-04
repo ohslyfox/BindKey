@@ -95,8 +95,7 @@ namespace BindKey.KeyActions
         public override string ToString()
         {
             return $"Capture {this.ScreenRegion.Width}x{this.ScreenRegion.Height} " +
-                   $"to {(this.FolderPath == string.Empty ? "default folder" : this.FolderPath)}" +
-                   $"{(this.NextKeyAction != null ? $" -> {this.NextKeyAction.ToString()}" : string.Empty)}";
+                   $"to {(this.FolderPath == string.Empty ? "default folder" : this.FolderPath)}" + NextString;
         }
     }
 }

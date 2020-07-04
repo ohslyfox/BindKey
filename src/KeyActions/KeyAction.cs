@@ -11,7 +11,8 @@ namespace BindKey.KeyActions
         None = 0,
         OpenProcess = 1,
         ScreenCapture = 2,
-        KillStartProcess = 3
+        KillProcess = 3,
+        DeleteFiles = 4
     }
 
     public delegate void KeyAction();
@@ -40,10 +41,10 @@ namespace BindKey.KeyActions
         protected virtual List<string> SaveOrder { get => new List<string> { this.Type.ToString(), this.GUID, this.NextKeyActionGUID,
                                                                              this.Keys[0].ToString(), this.Keys[1].ToString(), this.Keys[2].ToString(),
                                                                              this.Enabled.ToString() }; }
-
+        
         public abstract ActionTypes Type { get; }
         protected abstract void KeyActionProcess();
-        
+        protected string NextString { get => $"{(this.NextKeyAction != null ? $" -> {this.NextKeyAction.ToString()}" : string.Empty)}"; }
         public KeyAction Action { get => new KeyAction(KeyActionProcess); }
         public IKeyAction NextKeyAction { get; private set; }
         public bool Enabled { get; private set; }

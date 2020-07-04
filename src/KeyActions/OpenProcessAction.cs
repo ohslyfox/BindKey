@@ -61,8 +61,7 @@ namespace BindKey.KeyActions
         public override string ToString()
         {
             return $"Open {this.FilePath}" +
-                   $"{(this.AsAdmin ? " as administrator" : string.Empty)}" +
-                   $"{(this.NextKeyAction != null ? $" -> {this.NextKeyAction.ToString()}" : string.Empty)}";
+                   $"{(this.AsAdmin ? " as administrator" : string.Empty)}" + NextString;
         }
     }
 }

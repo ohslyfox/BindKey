@@ -4,6 +4,7 @@ using Gma.System.MouseKeyHook;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -14,46 +15,60 @@ namespace BindKey
     internal partial class Add : Form
     {
         #region dimension constants
-        public static readonly Point DIMENSIONS_DEFAULT = new Point(288, 264);
-        public static readonly Point DIMENSIONS_PROCESS = new Point(288, 376);
-        public static readonly Point DIMENSIONS_SCREENCAPTURE = new Point(288, 486);
-        public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_1 = new Point(288, 364);
-        public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_2 = new Point(288, 400);
-        public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_3 = new Point(288, 444);
-        public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_PANEL_1 = new Point(248, 69);
-        public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_PANEL_2 = new Point(248, 105);
-        public static readonly Point DIMENSIONS_KILLRESTARTPROCESS_PANEL_3 = new Point(248, 148);
+        public const int DEFAULT_BUTTON_X = 11;
+        public const int DEFAULT_PANEL_X = 12;
+        public const int DEFAULT_PANEL_WIDTH = 248;
+        public const int DEFAULT_FORM_WIDTH = 288;
+        public const int DEFAULT_BOTTOM_OF_FORM = TOP_OF_FORM_MARGIN + KEY_COMBO_GROUPBOX_HEIGHT + CONTROL_MARGIN +
+                                                  ACTION_GROUPBOX_HEIGHT + CONTROL_MARGIN;
+        public const int HEADER_HEIGHT = 38;
+        public const int CONTROL_MARGIN = 10;
+        public const int TOP_OF_FORM_MARGIN = 3;
+        public const int BOTTOM_OF_FORM_MARGIN = 10;
+        public const int KEY_COMBO_GROUPBOX_HEIGHT = 75;
+        public const int ACTION_GROUPBOX_HEIGHT = 146;
+        public const int OPEN_PROCESS_PANEL_HEIGHT = 80;
+        public const int SCREENSHOT_PROCESS_PANEL_HEIGHT = 190;
+        public const int KILL_PROCESS_PANEL_HEIGHT = 190;
+        public const int DELETE_FILES_PANEL_HEIGHT = 180;
+        public const int SAVE_BUTTON_HEIGHT = 23;
         #endregion
 
-        #region location constants
-        public static readonly Point LOCATION_PANELS = new Point(12, 224);
+        #region dimension point constants
+        public static readonly Point DIMENSIONS_DEFAULT = new Point(DEFAULT_FORM_WIDTH, HEADER_HEIGHT + DEFAULT_BOTTOM_OF_FORM);
+        public static readonly Point DIMENSIONS_PROCESS = new Point(DEFAULT_FORM_WIDTH, DIMENSIONS_DEFAULT.Y + OPEN_PROCESS_PANEL_HEIGHT + CONTROL_MARGIN +
+                                                                                        SAVE_BUTTON_HEIGHT + BOTTOM_OF_FORM_MARGIN);
+        public static readonly Point DIMENSIONS_SCREENCAPTURE = new Point(DEFAULT_FORM_WIDTH, DIMENSIONS_DEFAULT.Y + SCREENSHOT_PROCESS_PANEL_HEIGHT + CONTROL_MARGIN +
+                                                                                              SAVE_BUTTON_HEIGHT + BOTTOM_OF_FORM_MARGIN);
+        public static readonly Point DIMENSIONS_KILLPROCESS = new Point(DEFAULT_FORM_WIDTH, DIMENSIONS_DEFAULT.Y + KILL_PROCESS_PANEL_HEIGHT + CONTROL_MARGIN +
+                                                                                            SAVE_BUTTON_HEIGHT + BOTTOM_OF_FORM_MARGIN);
+        public static readonly Point DIMENSIONS_DELETEFILES = new Point(DEFAULT_FORM_WIDTH, DIMENSIONS_DEFAULT.Y + DELETE_FILES_PANEL_HEIGHT + CONTROL_MARGIN +
+                                                                                            SAVE_BUTTON_HEIGHT + BOTTOM_OF_FORM_MARGIN);
         #endregion
 
-        private enum ContextDependentFormState
-        {
-            First = 0,
-            Second = 1,
-            Third = 2
-        }
+        #region location point constants
+        public static readonly Point LOCATION_PANELS = new Point(DEFAULT_PANEL_X, DEFAULT_BOTTOM_OF_FORM);
+        #endregion
 
         private PickKeyCombo KeyPicker { get; set; }
         private ScreenGrabber Grabber { get; set; }
-        private IKeyAction LocalAction;
+        private IKeyAction LocalAction { get; set; }
         private string LocalActionGUID { get => LocalAction == null ? string.Empty : LocalAction.GUID; }
-        private List<IKeyAction> KeyActions;
-        private List<IKeyAction> AvailableNextActions;
-        public Keys[] Keys = new Keys[3];
+        private List<IKeyAction> KeyActions { get; set; }
+        private List<IKeyAction> AvailableNextActions { get; set; }
+
+        public Keys[] Keys { get; set; } = new Keys[3];
         public Rectangle? SelectedRegion { get => Grabber.Region; }
         public IKeyAction NextAction { get => NextActionCombo.SelectedItem as IKeyAction; }
 
         public Add(List<IKeyAction> keyActions, IKeyAction selectedAction)
         {
-            InitializeComponent();
-            SetLocations();
             this.KeyActions = keyActions;
-            this.KeyPicker = null;
             this.LocalAction = selectedAction;
             this.AvailableNextActions = selectedAction == null ? this.KeyActions : this.KeyActions.Where(ka => KeyActionMeetsDisplayCriteria(ka)).ToList();
+
+            InitializeComponent();
+            SetDefaultDimensionsAndLocations();
             PopulateNextActions();
             PopulateSelectedAction(selectedAction);
         }
@@ -82,12 +97,21 @@ namespace BindKey
             }
         }
 
-        private void SetLocations()
+        private void SetDefaultDimensionsAndLocations()
         {
             foreach (Panel panel in this.Controls.OfType<Panel>())
             {
                 panel.Location = LOCATION_PANELS;
+                panel.Width = DEFAULT_PANEL_WIDTH;
             }
+            foreach (GroupBox groupBox in this.Controls.OfType<GroupBox>())
+            {
+                groupBox.Location = new Point(DEFAULT_PANEL_X, groupBox.Location.Y);
+                groupBox.Width = DEFAULT_PANEL_WIDTH;
+            }
+
+            this.KeyComboGroupBox.Height = KEY_COMBO_GROUPBOX_HEIGHT;
+            this.ActionGroupBox.Height = ACTION_GROUPBOX_HEIGHT;
         }
 
         private void PopulateSelectedAction(IKeyAction selectedAction)
@@ -111,26 +135,41 @@ namespace BindKey
                 case ActionTypes.ScreenCapture:
                     FillFormControlsScreenCaptureAction(selectedAction);
                     break;
-                case ActionTypes.KillStartProcess:
+                case ActionTypes.KillProcess:
                     FillFormControlsKillStartsProcessAction(selectedAction);
+                    break;
+                case ActionTypes.DeleteFiles:
+                    FillFormControlsDeleteProcessAction(selectedAction);
                     break;
             }
         }
 
+        private void FillFormControlsDeleteProcessAction(IKeyAction selectedAction)
+        {
+            DeleteFilesAction action = selectedAction as DeleteFilesAction;
+            DeleteFiles.Checked = true;
+            object boxedKeys = action.Keys.Clone();
+            Keys[0] = ((Keys[])boxedKeys)[0];
+            Keys[1] = ((Keys[])boxedKeys)[1];
+            Keys[2] = ((Keys[])boxedKeys)[2];
+            DeleteFolderPathTextBox.Text = action.FolderPath;
+            DeleteSearchPatternTextBox.Text = action.SearchPattern;
+            DeleteDaysTextBox.Text = action.Days;
+            DeleteHoursTextBox.Text = action.Hours;
+            DeleteMinutesTextBox.Text = action.Minutes;
+            DeleteSecondsTextBox.Text = action.Seconds;
+        }
+
         private void FillFormControlsKillStartsProcessAction(IKeyAction selectedAction)
         {
-            KillStartProcessAction killRestartProcessAction = selectedAction as KillStartProcessAction;
-            KillStartProcess.Checked = true;
+            KillProcessAction killRestartProcessAction = selectedAction as KillProcessAction;
+            KillProcess.Checked = true;
             object boxedKeys = killRestartProcessAction.Keys.Clone();
             Keys[0] = ((Keys[])boxedKeys)[0];
             Keys[1] = ((Keys[])boxedKeys)[1];
             Keys[2] = ((Keys[])boxedKeys)[2];
             KillRestartProcessNameTextBox.Text = killRestartProcessAction.ProcessName;
-            KillRestartRestartCheckBox.Checked = killRestartProcessAction.Restart;
-            KillRestartAdminCheckbox.Checked = killRestartProcessAction.AsAdmin;
             CheckBoxEnabled.Checked = killRestartProcessAction.Enabled;
-            checkBox2.Checked = killRestartProcessAction.MatchName;
-            textBox3.Text = killRestartProcessAction.FilePath;
         }
 
         private void FillFormControlsScreenCaptureAction(IKeyAction selectedAction)
@@ -158,7 +197,7 @@ namespace BindKey
             Keys[0] = ((Keys[])boxedKeys)[0];
             Keys[1] = ((Keys[])boxedKeys)[1];
             Keys[2] = ((Keys[])boxedKeys)[2];
-            textBox1.Text = openProcessAction.FilePath;
+            OpenFilePathTextBox.Text = openProcessAction.FilePath;
             checkBox1.Checked = openProcessAction.AsAdmin;
             CheckBoxEnabled.Checked = openProcessAction.Enabled;
         }
@@ -176,8 +215,11 @@ namespace BindKey
                     case ActionTypes.ScreenCapture:
                         FormAdjustScreenCapture();
                         break;
-                    case ActionTypes.KillStartProcess:
-                        FormAdjustKillRestartProcess(ResolveFormState(ActionTypes.KillStartProcess));
+                    case ActionTypes.KillProcess:
+                        FormAdjustKillRestartProcess();
+                        break;
+                    case ActionTypes.DeleteFiles:
+                        FormAdjustDeleteFiles();
                         break;
                 }
             }
@@ -196,25 +238,6 @@ namespace BindKey
         private ActionTypes ResolveSelectedAction()
         {
             return (ActionTypes)Enum.Parse(typeof(ActionTypes), ActionGroupBox.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Name, true);
-        }
-
-        private ContextDependentFormState ResolveFormState(ActionTypes type)
-        {
-            ContextDependentFormState res = ContextDependentFormState.First;
-            switch (type)
-            {
-                case ActionTypes.KillStartProcess:
-                    if (KillRestartRestartCheckBox.Checked)
-                    {
-                        res = ContextDependentFormState.Second;
-                        if (checkBox2.Checked == false)
-                        {
-                            res = ContextDependentFormState.Third;
-                        }
-                    }
-                    break;
-            }
-            return res;
         }
 
         private void DrawKeyDisplay()
@@ -248,6 +271,7 @@ namespace BindKey
                     KeyActions[KeyActions.IndexOf(LocalAction)] = newAction;
                 }
                 this.Close();
+                this.Dispose();
             }
         }
 
@@ -258,24 +282,38 @@ namespace BindKey
                 MessageBox.Show("Error: duplicate keys in key combination.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
-            if (this.CheckBoxEnabled.Checked && 
-                KeyActions.Any(ka => ka.Enabled && 
+            if (this.CheckBoxEnabled.Checked &&
+                KeyActions.Any(ka => ka.Enabled &&
                                      ka.Equals(LocalAction) == false &&
+                                     string.IsNullOrWhiteSpace(ka.KeyCombo) == false &&
                                      ka.KeyCombo == DefaultKeyAction.GetKeyCombo(Keys, false)))
             {
                 MessageBox.Show("Error: an event is already bound to the key combo " + DefaultKeyAction.GetKeyCombo(Keys, true) + ".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
+
             switch (ResolveSelectedAction())
             {
-                case ActionTypes.KillStartProcess:
-                    if (string.IsNullOrEmpty(KillRestartProcessNameTextBox.Text))
+                case ActionTypes.OpenProcess:
+                    if (string.IsNullOrWhiteSpace(OpenFilePathTextBox.Text))
+                    {
+                        MessageBox.Show("Error: a process or folder name must be set.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return false;
+                    }
+                    break;
+                case ActionTypes.KillProcess:
+                    if (string.IsNullOrWhiteSpace(KillRestartProcessNameTextBox.Text))
                     {
                         MessageBox.Show("Error: a process name must be set.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return false;
                     }
                     break;
                 case ActionTypes.ScreenCapture:
+                    if (string.IsNullOrWhiteSpace(textBox2.Text))
+                    {
+                        MessageBox.Show("Error: a folder path must be set.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return false;
+                    }
                     if (Grabber != null)
                     {
                         if (Grabber.CalculateRegion() == null)
@@ -287,6 +325,13 @@ namespace BindKey
                     else
                     {
                         MessageBox.Show("Error: a screen region must be selected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return false;
+                    }
+                    break;
+                case ActionTypes.DeleteFiles:
+                    if (string.IsNullOrWhiteSpace(DeleteFolderPathTextBox.Text))
+                    {
+                        MessageBox.Show("Error: a folder path must be set.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return false;
                     }
                     break;
@@ -307,10 +352,7 @@ namespace BindKey
             ShowHidePanels(ActionTypes.OpenProcess);
             this.Width = DIMENSIONS_PROCESS.X;
             this.Height = DIMENSIONS_PROCESS.Y;
-            Point buttonLoc = new Point();
-            buttonLoc.X = 11;
-            buttonLoc.Y = panelProcess.Location.Y + panelProcess.Height + 6;
-            ButtonSave.Location = buttonLoc;
+            ButtonSave.Location = new Point(DEFAULT_BUTTON_X, DEFAULT_BOTTOM_OF_FORM + OPEN_PROCESS_PANEL_HEIGHT + CONTROL_MARGIN);
         }
 
         private void FormAdjustScreenCapture()
@@ -318,40 +360,23 @@ namespace BindKey
             ShowHidePanels(ActionTypes.ScreenCapture);
             this.Width = DIMENSIONS_SCREENCAPTURE.X;
             this.Height = DIMENSIONS_SCREENCAPTURE.Y;
-            Point buttonLoc = new Point();
-            buttonLoc.X = 11;
-            buttonLoc.Y = PanelScreenCapture.Location.Y + PanelScreenCapture.Height + 6;
-            ButtonSave.Location = buttonLoc;
+            ButtonSave.Location = new Point(DEFAULT_BUTTON_X, DEFAULT_BOTTOM_OF_FORM + SCREENSHOT_PROCESS_PANEL_HEIGHT + CONTROL_MARGIN);
         }
 
-        private void FormAdjustKillRestartProcess(ContextDependentFormState formState)
+        private void FormAdjustKillRestartProcess()
         {
-            ShowHidePanels(ActionTypes.KillStartProcess);
-            switch (formState)
-            {
-                case ContextDependentFormState.First:
-                    this.Width = DIMENSIONS_KILLRESTARTPROCESS_1.X;
-                    this.Height = DIMENSIONS_KILLRESTARTPROCESS_1.Y;
-                    this.PanelKillRestartProcess.Width = DIMENSIONS_KILLRESTARTPROCESS_PANEL_1.X;
-                    this.PanelKillRestartProcess.Height = DIMENSIONS_KILLRESTARTPROCESS_PANEL_1.Y;
-                    break;
-                case ContextDependentFormState.Second:
-                    this.Width = DIMENSIONS_KILLRESTARTPROCESS_2.X;
-                    this.Height = DIMENSIONS_KILLRESTARTPROCESS_2.Y;
-                    this.PanelKillRestartProcess.Width = DIMENSIONS_KILLRESTARTPROCESS_PANEL_2.X;
-                    this.PanelKillRestartProcess.Height = DIMENSIONS_KILLRESTARTPROCESS_PANEL_2.Y;
-                    break;
-                case ContextDependentFormState.Third:
-                    this.Width = DIMENSIONS_KILLRESTARTPROCESS_3.X;
-                    this.Height = DIMENSIONS_KILLRESTARTPROCESS_3.Y;
-                    this.PanelKillRestartProcess.Width = DIMENSIONS_KILLRESTARTPROCESS_PANEL_3.X;
-                    this.PanelKillRestartProcess.Height = DIMENSIONS_KILLRESTARTPROCESS_PANEL_3.Y;
-                    break;
-            }
-            Point buttonLoc = new Point();
-            buttonLoc.X = 11;
-            buttonLoc.Y = PanelKillRestartProcess.Location.Y + PanelKillRestartProcess.Height + 6;
-            ButtonSave.Location = buttonLoc;
+            ShowHidePanels(ActionTypes.KillProcess);
+            this.Width = DIMENSIONS_KILLPROCESS.X;
+            this.Height = DIMENSIONS_KILLPROCESS.Y;
+            ButtonSave.Location = new Point(DEFAULT_BUTTON_X, DEFAULT_BOTTOM_OF_FORM + KILL_PROCESS_PANEL_HEIGHT + CONTROL_MARGIN);
+        }
+
+        private void FormAdjustDeleteFiles()
+        {
+            ShowHidePanels(ActionTypes.DeleteFiles);
+            this.Width = DIMENSIONS_DELETEFILES.X;
+            this.Height = DIMENSIONS_DELETEFILES.Y;
+            ButtonSave.Location = new Point(DEFAULT_BUTTON_X, DEFAULT_BOTTOM_OF_FORM + DELETE_FILES_PANEL_HEIGHT + CONTROL_MARGIN);
         }
 
         private void ShowHidePanels(ActionTypes type)
@@ -359,7 +384,8 @@ namespace BindKey
             if (type == ActionTypes.None) return;
             panelProcess.Visible = type == ActionTypes.OpenProcess;
             PanelScreenCapture.Visible = type == ActionTypes.ScreenCapture;
-            PanelKillRestartProcess.Visible = type == ActionTypes.KillStartProcess;
+            PanelKillRestartProcess.Visible = type == ActionTypes.KillProcess;
+            PanelDeleteFiles.Visible = type == ActionTypes.DeleteFiles;
         }
 
         private void RadioProcess_CheckedChanged(object sender, EventArgs e)
@@ -374,14 +400,28 @@ namespace BindKey
 
         private void KillRestartProcess_CheckedChanged(object sender, EventArgs e)
         {
-            FormAdjustKillRestartProcess(ResolveFormState(ActionTypes.KillStartProcess));
+            RefreshProcessListView();
+            FormAdjustKillRestartProcess();
         }
 
-        private void KillRestartRestartCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void DeleteFiles_CheckedChanged(object sender, EventArgs e)
         {
-            KillRestartAdminCheckbox.Visible = !KillRestartAdminCheckbox.Visible;
-            checkBox2.Visible = !checkBox2.Visible;
-            FormAdjustKillRestartProcess(ResolveFormState(ActionTypes.KillStartProcess));
+            FormAdjustDeleteFiles();
+        }
+
+        private void RefreshProcessListView()
+        {
+            RefreshProcessButton.Enabled = false;
+            KillRestartProcessNameTextBox.Text = string.Empty;
+            KillProcessListView.Items.Clear();
+            List<string> processes = Process.GetProcesses().Select(p => p.ProcessName).Distinct().ToList();
+            processes.Sort();
+            foreach (var process in processes)
+            {
+                KillProcessListView.Items.Add(process);
+            }
+            KillProcessListView.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.ColumnContent);
+            RefreshProcessButton.Enabled = true;
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -394,43 +434,36 @@ namespace BindKey
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.InitialDirectory = textBox1.Text == string.Empty ? Directory.GetCurrentDirectory() : textBox1.Text.Contains(".") ? textBox1.Text.Substring(0, textBox1.Text.LastIndexOf("\\")) : textBox1.Text;
+                openFileDialog.InitialDirectory = OpenFilePathTextBox.Text == string.Empty ? Directory.GetCurrentDirectory() : OpenFilePathTextBox.Text.Contains(".") ? OpenFilePathTextBox.Text.Substring(0, OpenFilePathTextBox.Text.LastIndexOf("\\")) : OpenFilePathTextBox.Text;
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    textBox1.Text = openFileDialog.FileName;
+                    OpenFilePathTextBox.Text = openFileDialog.FileName;
                 }
             }
         }
 
         private void ButtonTakeScreenshotFileDialog_Click(object sender, EventArgs e)
         {
+            textBox2.Text = GetFolderPathDialogResult();
+        }
+
+        private void ButtonDeleteFolderDialog_Click(object sender, EventArgs e)
+        {
+            DeleteFolderPathTextBox.Text = GetFolderPathDialogResult();
+        }
+
+        private string GetFolderPathDialogResult()
+        {
             using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
             {
                 folderBrowserDialog.SelectedPath = textBox2.Text == string.Empty ? Directory.GetCurrentDirectory() : textBox2.Text.Contains(".") ? textBox2.Text.Substring(0, textBox2.Text.LastIndexOf("\\")) : textBox2.Text;
                 if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
                 {
-                    textBox2.Text = folderBrowserDialog.SelectedPath;
+                    return folderBrowserDialog.SelectedPath;
                 }
             }
+            return string.Empty;
         }
-
-        private void button4_Click_1(object sender, EventArgs e)
-        {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.InitialDirectory = textBox3.Text == string.Empty ? Directory.GetCurrentDirectory() : textBox3.Text.Contains(".") ? textBox3.Text.Substring(0, textBox3.Text.LastIndexOf("\\")) : textBox3.Text;
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    textBox3.Text = openFileDialog.FileName;
-                }
-            }
-        }
-
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
-        {
-            FormAdjustKillRestartProcess(ResolveFormState(ActionTypes.KillStartProcess));
-        }
-
 
         private void button6_Click(object sender, EventArgs e)
         {
@@ -438,7 +471,7 @@ namespace BindKey
             {
                 c.Enabled = false;
             }
-            groupBox1.Enabled = true;
+            KeyComboGroupBox.Enabled = true;
             button6.Enabled = false;
             TextBoxKeyCombo.Text = "Press up to three keys...";
             CreatePickKeyComboForm();
@@ -447,7 +480,44 @@ namespace BindKey
             TextBoxKeyCombo.Select(TextBoxKeyCombo.Text.Length, 0);
         }
 
-        protected internal class ScreenGrabber
+        private void ForceNumericalEvent_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (char.IsDigit(e.KeyChar) == false &&
+                char.IsControl(e.KeyChar) == false)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void ForceNumericalEvent_TextChanged(object sender, EventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (textBox.Text.Any(c => char.IsDigit(c) == false))
+            {
+                textBox.Text = "0";
+            }
+
+            if (textBox.Text == string.Empty)
+            {
+                textBox.Text = "0";
+            }
+        }
+
+        private void RefreshProcessButton_Click(object sender, EventArgs e)
+        {
+            RefreshProcessListView();
+        }
+
+        private void KillProcessListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (KillProcessListView.SelectedItems.Count > 0)
+            {
+                KillRestartProcessNameTextBox.Text = KillProcessListView.SelectedItems[0].Text;
+            }
+        }
+
+        private class ScreenGrabber
         {
             private IKeyboardMouseEvents m_GlobalHook = Hook.GlobalEvents();
             private List<Point> Points = new List<Point>();
@@ -485,7 +555,7 @@ namespace BindKey
                         g.CopyFromScreen(rec.X, rec.Y, 0, 0, bmp.Size);
                         AddForm.pictureBox1.Image = bmp;
                     }
-                    
+
                     m_GlobalHook.MouseDown -= MouseDownHandler;
                     m_GlobalHook.Dispose();
                 }
@@ -548,7 +618,7 @@ namespace BindKey
             }
         }
 
-        protected internal class PickKeyCombo
+        private class PickKeyCombo
         {
             private IKeyboardMouseEvents m_GlobalHook = Hook.GlobalEvents();
             private Keys[] Keys { get; set; }
@@ -610,5 +680,7 @@ namespace BindKey
                 }
             }
         }
+
+        
     }
 }

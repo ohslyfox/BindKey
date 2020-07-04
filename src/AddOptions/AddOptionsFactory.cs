@@ -17,8 +17,11 @@ namespace BindKey.AddOptions
                 case ActionTypes.ScreenCapture:
                     res = new ScreenCaptureOptions(addForm);
                     break;
-                case ActionTypes.KillStartProcess:
-                    res = new KillStartProcessOptions(addForm);
+                case ActionTypes.KillProcess:
+                    res = new KillProcessOptions(addForm);
+                    break;
+                case ActionTypes.DeleteFiles:
+                    res = new DeleteFilesOptions(addForm);
                     break;
                 default:
                     Console.WriteLine($"DEV ERROR: could not create add options from factory of type {type}.");

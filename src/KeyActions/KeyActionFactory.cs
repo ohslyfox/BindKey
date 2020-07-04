@@ -17,8 +17,11 @@ namespace BindKey.KeyActions
                 case ActionTypes.ScreenCapture:
                     res = new ScreenCaptureAction(options as ScreenCaptureOptions, GUID);
                     break;
-                case ActionTypes.KillStartProcess:
-                    res = new KillStartProcessAction(options as KillStartProcessOptions, GUID);
+                case ActionTypes.KillProcess:
+                    res = new KillProcessAction(options as KillProcessOptions, GUID);
+                    break;
+                case ActionTypes.DeleteFiles:
+                    res = new DeleteFilesAction(options as DeleteFilesOptions, GUID);
                     break;
                 default:
                     Console.WriteLine($"DEV ERROR: could not create key action from factory of type {type}.");
@@ -41,8 +44,11 @@ namespace BindKey.KeyActions
                 case ActionTypes.ScreenCapture:
                     res = new ScreenCaptureAction(parts);
                     break;
-                case ActionTypes.KillStartProcess:
-                    res = new KillStartProcessAction(parts);
+                case ActionTypes.KillProcess:
+                    res = new KillProcessAction(parts);
+                    break;
+                case ActionTypes.DeleteFiles:
+                    res = new DeleteFilesAction(parts);
                     break;
                 default:
                     Console.WriteLine($"DEV ERROR: could not create key action from factory of type {type}.");

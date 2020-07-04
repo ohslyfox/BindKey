@@ -17,11 +17,17 @@ namespace BindKey.AddOptions
 
         public abstract ActionTypes Type { get; }
 
-        public bool Enabled { get => (AddForm.Controls.Find(CONTROL_ENABLED, true).First() as CheckBox).Checked; }
+        public bool Enabled { get => (GetControl(CONTROL_ENABLED) as CheckBox).Checked; }
         public Keys[] Keys { get => this.AddForm.Keys; }
         public IKeyAction NextAction { get => this.AddForm.NextAction; }
 
         protected Add AddForm { get; }
+
+        protected Control GetControl(string name)
+        {
+            return this.AddForm.Controls.Find(name, true).First();
+        }
+
         public DefaultAddOptions(Add addForm)
         {
             this.AddForm = addForm;
