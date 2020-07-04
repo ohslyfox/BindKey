@@ -3,4 +3,4 @@
 
 * Ready-to-build package
 
-* [Current EXE](https://drive.google.com/file/d/1uW2snpEnI9koSzt5auZzSL1Ewy3RRUX5/view?usp=sharing)
+* [Current EXE](https://drive.google.com/open?id=1uW2snpEnI9koSzt5auZzSL1Ewy3RRUX5)
