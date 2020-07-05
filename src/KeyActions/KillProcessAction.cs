@@ -59,8 +59,7 @@ namespace BindKey.KeyActions
 
         public override string ToString()
         {
-            return $"Kill {this.ProcessName}" +
-                   $"{(this.NextKeyAction != null ? $" -> {this.NextKeyAction.ToString()}": string.Empty)}" + NextString;
+            return $"Kill {this.ProcessName}" + NextString;
         }
     }
 }
