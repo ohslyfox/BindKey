@@ -353,7 +353,6 @@ namespace BindKey
 
         private void ProfileFormClosed(object sender, FormClosedEventArgs e)
         {
-            int beforeComboCount = ProfileComboBox.Items.Count;
             try
             {
                 this.BringToFront();
@@ -364,11 +363,7 @@ namespace BindKey
                     ProfileComboBox.Items.Add(addedItem);
                     ProfileComboBox.SelectedIndex = ProfileComboBox.Items.Count - 1;
                 }
-
-                if (beforeComboCount == 0)
-                {
-                    EnableDisableNonProfileControls(true);
-                }
+                EnableDisableNonProfileControls(ProfileComboBox.Items.Count > 0);
             }
             catch (Exception)
             {
