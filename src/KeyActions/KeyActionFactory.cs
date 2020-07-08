@@ -3,7 +3,7 @@ using System;
 
 namespace BindKey.KeyActions
 {
-    internal class KeyActionFactory
+    internal static class KeyActionFactory
     {
         public static IKeyAction GetNewKeyActionOfType(ActionTypes type, IAddOptions options, string GUID = "")
         {
