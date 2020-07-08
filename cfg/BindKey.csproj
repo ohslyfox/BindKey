@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="AddOptions\AddOptions.cs" />
     <Compile Include="AddOptions\AddOptionsFactory.cs" />
+    <Compile Include="AddOptions\AddOptionsUtil.cs" />
     <Compile Include="AddOptions\DeleteFilesOptions.cs" />
     <Compile Include="AddOptions\KillProcessOptions.cs" />
     <Compile Include="AddOptions\OpenProcessOptions.cs" />

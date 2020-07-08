@@ -3,7 +3,7 @@ using System;
 
 namespace BindKey.AddOptions
 {
-    internal class AddOptionsFactory
+    internal static class AddOptionsFactory
     {
         public static IAddOptions GetAddOptionsOfType(ActionTypes type, Add addForm)
         {
@@ -24,9 +24,7 @@ namespace BindKey.AddOptions
                     res = new DeleteFilesOptions(addForm);
                     break;
                 default:
-                    Console.WriteLine($"DEV ERROR: could not create add options from factory of type {type}.");
-                    Environment.Exit(1);
-                    break;
+                    throw new ArgumentException($"DEV ERROR: could not create add options from factory of type {type}.");
             }
 
             return res;

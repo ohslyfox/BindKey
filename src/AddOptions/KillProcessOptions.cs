@@ -13,5 +13,25 @@ namespace BindKey.AddOptions
         public KillProcessOptions(Add addForm)
             : base(addForm)
         { }
+
+        public void FillForm(KillProcessAction action)
+        {
+            base.FillForm(action);
+            SetControl<TextBox>(CONTROL_PROCESSNAME, action.ProcessName);
+        }
+
+        public override bool Validate()
+        {
+            bool res = base.Validate();
+            if (res)
+            {
+                if (string.IsNullOrWhiteSpace(ProcessName))
+                {
+                    MessageBox.Show("Error: a process name must be set.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            return res;
+        }
     }
 }

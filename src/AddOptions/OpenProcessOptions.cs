@@ -15,5 +15,26 @@ namespace BindKey.AddOptions
         public OpenProcessOptions(Add addForm)
             : base(addForm)
         { }
+
+        public void FillForm(OpenProcessAction action)
+        {
+            base.FillForm(action);
+            SetControl<TextBox>(CONTROL_FILEPATH, action.FilePath);
+            SetControl<CheckBox>(CONTROL_ASADMIN, action.AsAdmin);
+        }
+
+        public override bool Validate()
+        {
+            bool res = base.Validate();
+            if (res)
+            {
+                if (string.IsNullOrWhiteSpace(FilePath))
+                {
+                    MessageBox.Show("Error: a process or folder name must be set.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            return res;
+        }
     }
 }

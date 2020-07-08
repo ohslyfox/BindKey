@@ -92,7 +92,7 @@
             this.OpenProcess.TabStop = true;
             this.OpenProcess.Text = "Open Folder or Start Process";
             this.OpenProcess.UseVisualStyleBackColor = true;
-            this.OpenProcess.CheckedChanged += new System.EventHandler(this.RadioProcess_CheckedChanged);
+            this.OpenProcess.CheckedChanged += new System.EventHandler(this.ActionRadio_CheckedChanged);
             // 
             // panelProcess
             // 
@@ -172,7 +172,7 @@
             this.DeleteFiles.TabStop = true;
             this.DeleteFiles.Text = "Delete Files";
             this.DeleteFiles.UseVisualStyleBackColor = true;
-            this.DeleteFiles.CheckedChanged += new System.EventHandler(this.DeleteFiles_CheckedChanged);
+            this.DeleteFiles.CheckedChanged += new System.EventHandler(this.ActionRadio_CheckedChanged);
             // 
             // NextActionCombo
             // 
@@ -202,7 +202,7 @@
             this.KillProcess.TabStop = true;
             this.KillProcess.Text = "Kill Process";
             this.KillProcess.UseVisualStyleBackColor = true;
-            this.KillProcess.CheckedChanged += new System.EventHandler(this.KillRestartProcess_CheckedChanged);
+            this.KillProcess.CheckedChanged += new System.EventHandler(this.ActionRadio_CheckedChanged);
             // 
             // CheckBoxEnabled
             // 
@@ -226,7 +226,7 @@
             this.ScreenCapture.TabStop = true;
             this.ScreenCapture.Text = "Take Screenshot";
             this.ScreenCapture.UseVisualStyleBackColor = true;
-            this.ScreenCapture.CheckedChanged += new System.EventHandler(this.RadioScreenshot_CheckedChanged);
+            this.ScreenCapture.CheckedChanged += new System.EventHandler(this.ActionRadio_CheckedChanged);
             // 
             // ButtonSave
             // 

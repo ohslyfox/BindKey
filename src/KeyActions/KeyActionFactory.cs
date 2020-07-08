@@ -24,9 +24,7 @@ namespace BindKey.KeyActions
                     res = new DeleteFilesAction(options as DeleteFilesOptions, GUID);
                     break;
                 default:
-                    Console.WriteLine($"DEV ERROR: could not create key action from factory of type {type}.");
-                    Environment.Exit(1);
-                    break;
+                    throw new ArgumentException($"DEV ERROR: could not create key action from factory of type {type}.");
             }
             return res;
         }
@@ -51,9 +49,7 @@ namespace BindKey.KeyActions
                     res = new DeleteFilesAction(parts);
                     break;
                 default:
-                    Console.WriteLine($"DEV ERROR: could not create key action from factory of type {type}.");
-                    Environment.Exit(1);
-                    break;
+                    throw new ArgumentException($"DEV ERROR: could not create key action from factory of type {type}.");
             }
             return res;
         }

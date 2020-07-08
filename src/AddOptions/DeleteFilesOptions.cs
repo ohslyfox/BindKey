@@ -23,5 +23,30 @@ namespace BindKey.AddOptions
         public DeleteFilesOptions(Add addForm)
             : base(addForm)
         { }
+
+        public void FillForm(DeleteFilesAction action)
+        {
+            base.FillForm(action);
+            SetControl<TextBox>(CONTROL_DAYS, action.Days);
+            SetControl<TextBox>(CONTROL_HOURS, action.Hours);
+            SetControl<TextBox>(CONTROL_MINUTES, action.Minutes);
+            SetControl<TextBox>(CONTROL_SECONDS, action.Seconds);
+            SetControl<TextBox>(CONTROL_SEARCHPATTERN, action.SearchPattern);
+            SetControl<TextBox>(CONTROL_FOLDERPATH, action.FolderPath);
+        }
+
+        public override bool Validate()
+        {
+            bool res = base.Validate();
+            if (res)
+            {
+                if (string.IsNullOrWhiteSpace(FolderPath))
+                {
+                    MessageBox.Show("Error: a folder path must be set.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            return res;
+        }
     }
 }
