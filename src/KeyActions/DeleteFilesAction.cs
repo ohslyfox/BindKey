@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
 
 namespace BindKey.KeyActions
 {
@@ -15,6 +14,28 @@ namespace BindKey.KeyActions
         public string Minutes { get; }
         public string Seconds { get; }
         public override ActionTypes Type { get => ActionTypes.DeleteFiles; }
+
+        public DeleteFilesAction(DeleteFilesOptions options, string GUID)
+            : base(options, GUID)
+        {
+            this.FolderPath = options.FolderPath;
+            this.SearchPattern = options.SearchPattern;
+            this.Days = options.Days;
+            this.Hours = options.Hours;
+            this.Minutes = options.Minutes;
+            this.Seconds = options.Seconds;
+        }
+
+        public DeleteFilesAction(string[] parts)
+            : base(parts)
+        {
+            this.FolderPath = parts[7];
+            this.SearchPattern = parts[8];
+            this.Days = parts[9];
+            this.Hours = parts[10];
+            this.Minutes = parts[11];
+            this.Seconds = parts[12];
+        }
 
         protected override List<string> SaveOrder
         {
@@ -51,32 +72,10 @@ namespace BindKey.KeyActions
                     }
                 }
             }
-            catch (Exception)
+            catch
             {
-                MessageBox.Show("Error: could not delete file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BindKey.GetInstance().ShowBalloonTip("Error", "Could not delete file(s).");
             }
-        }
-
-        public DeleteFilesAction(DeleteFilesOptions options, string GUID)
-            : base(options, GUID)
-        {
-            this.FolderPath = options.FolderPath;
-            this.SearchPattern = options.SearchPattern;
-            this.Days = options.Days;
-            this.Hours = options.Hours;
-            this.Minutes = options.Minutes;
-            this.Seconds = options.Seconds;
-        }
-
-        public DeleteFilesAction(string[] parts)
-            : base(parts)
-        {
-            this.FolderPath = parts[7];
-            this.SearchPattern = parts[8];
-            this.Days = parts[9];
-            this.Hours = parts[10];
-            this.Minutes = parts[11];
-            this.Seconds = parts[12];
         }
 
         public override string ToString()

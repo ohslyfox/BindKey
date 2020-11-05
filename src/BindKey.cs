@@ -30,6 +30,22 @@ namespace BindKey
             _filePath = filePath;
             LoadSavedData();
             this.FormClosing += new FormClosingEventHandler(CloseButtonClicked);
+            SingletonInstance = this;
+        }
+
+        public static BindKey SingletonInstance = null;
+        public static BindKey GetInstance()
+        {
+            if (SingletonInstance == null)
+            {
+                throw new Exception("Attempted to access instance of BindKey before it was instantiated.");
+            }
+            return SingletonInstance;
+        }
+
+        public void ShowBalloonTip(string title, string message)
+        {
+            notifyIcon1.ShowBalloonTip(1250, title, message, ToolTipIcon.Info);
         }
 
         private void LoadSavedData()
