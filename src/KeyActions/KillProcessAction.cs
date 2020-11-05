@@ -1,8 +1,6 @@
 ﻿using BindKey.AddOptions;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows.Forms;
 
 namespace BindKey.KeyActions
 {
@@ -10,6 +8,18 @@ namespace BindKey.KeyActions
     {
         public string ProcessName { get; }
         public override ActionTypes Type { get => ActionTypes.KillProcess; }
+
+        public KillProcessAction(KillProcessOptions options, string GUID = "")
+            : base(options, GUID)
+        {
+            this.ProcessName = options.ProcessName;
+        }
+
+        public KillProcessAction(string[] parts)
+            : base(parts)
+        {
+            this.ProcessName = parts[7];
+        }
 
         protected override List<string> SaveOrder
         {
@@ -39,22 +49,10 @@ namespace BindKey.KeyActions
                     process.Kill();
                 }
             }
-            catch (Exception)
+            catch
             {
-                MessageBox.Show("Error: could not kill or start process.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BindKey.GetInstance().ShowBalloonTip("Error", "Could not kill or start process.");
             }
-        }
-
-        public KillProcessAction(KillProcessOptions options, string GUID = "")
-            : base(options, GUID)
-        {
-            this.ProcessName = options.ProcessName;
-        }
-
-        public KillProcessAction(string[] parts)
-            : base(parts)
-        {
-            this.ProcessName = parts[7];
         }
 
         public override string ToString()

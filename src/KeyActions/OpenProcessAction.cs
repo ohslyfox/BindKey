@@ -1,8 +1,6 @@
 ﻿using BindKey.AddOptions;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows.Forms;
 
 namespace BindKey.KeyActions
 {
@@ -11,6 +9,20 @@ namespace BindKey.KeyActions
         public string FilePath { get; }
         public bool AsAdmin { get; }
         public override ActionTypes Type { get => ActionTypes.OpenProcess; }
+
+        public OpenProcessAction(OpenProcessOptions options, string GUID = "")
+            : base(options, GUID)
+        {
+            this.FilePath = options.FilePath;
+            this.AsAdmin = options.AsAdmin;
+        }
+
+        public OpenProcessAction(string[] parts)
+            : base(parts)
+        {
+            this.FilePath = parts[7];
+            this.AsAdmin = bool.Parse(parts[8]);
+        }
 
         protected override List<string> SaveOrder
         {
@@ -38,24 +50,10 @@ namespace BindKey.KeyActions
                 process.StartInfo.FileName = FilePath;
                 process.Start();
             }
-            catch (Exception)
+            catch
             {
-                MessageBox.Show("Error: could not start process.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BindKey.GetInstance().ShowBalloonTip("Error", $"BindKey was unable to start process \"{this.FilePath}\"");
             }
-        }
-
-        public OpenProcessAction(OpenProcessOptions options, string GUID = "")
-            : base(options, GUID)
-        {
-            this.FilePath = options.FilePath;
-            this.AsAdmin = options.AsAdmin;
-        }
-
-        public OpenProcessAction(string[] parts)
-            : base(parts)
-        {
-            this.FilePath = parts[7];
-            this.AsAdmin = bool.Parse(parts[8]);
         }
 
         public override string ToString()

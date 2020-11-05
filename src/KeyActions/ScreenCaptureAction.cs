@@ -13,6 +13,31 @@ namespace BindKey.KeyActions
         public string FolderPath { get; }
         public override ActionTypes Type { get => ActionTypes.ScreenCapture; }
 
+        public ScreenCaptureAction(ScreenCaptureOptions options, string GUID = "")
+            : base(options, GUID)
+        {
+            if (options.ScreenRegion == null)
+            {
+                Console.WriteLine("DEV ERROR: screen capture action attempted to be created with no valid screen region");
+                Environment.Exit(1);
+            }
+
+            this.ScreenRegion = (Rectangle)options.ScreenRegion;
+            this.FolderPath = options.FolderPath;
+        }
+
+        public ScreenCaptureAction(string[] parts)
+            : base(parts)
+        {
+            Rectangle rec = new Rectangle();
+            rec.X = Int32.Parse(parts[7]);
+            rec.Y = Int32.Parse(parts[8]);
+            rec.Width = Int32.Parse(parts[9]);
+            rec.Height = Int32.Parse(parts[10]);
+            this.ScreenRegion = rec;
+            this.FolderPath = parts[11];
+        }
+
         protected override List<string> SaveOrder
         {
             get
@@ -61,35 +86,10 @@ namespace BindKey.KeyActions
                 bmp.Save(Path.Combine(FolderPath, name) + ".png");
                 Clipboard.SetImage(bmp);
             }
-            catch (Exception)
+            catch
             {
-                MessageBox.Show("Error: could not capture screen region, check folder path.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BindKey.GetInstance().ShowBalloonTip("Error", "Could not capture screen region, check folder path.");
             }
-        }
-
-        public ScreenCaptureAction(ScreenCaptureOptions options, string GUID = "")
-            : base(options, GUID)
-        {
-            if (options.ScreenRegion == null)
-            {
-                Console.WriteLine("DEV ERROR: screen capture action attempted to be created with no valid screen region");
-                Environment.Exit(1);
-            }
-
-            this.ScreenRegion = (Rectangle)options.ScreenRegion;
-            this.FolderPath = options.FolderPath;
-        }
-
-        public ScreenCaptureAction(string[] parts)
-            : base(parts)
-        {
-            Rectangle rec = new Rectangle();
-            rec.X = Int32.Parse(parts[7]);
-            rec.Y = Int32.Parse(parts[8]);
-            rec.Width = Int32.Parse(parts[9]);
-            rec.Height = Int32.Parse(parts[10]);
-            this.ScreenRegion = rec;
-            this.FolderPath = parts[11];
         }
 
         public override string ToString()
