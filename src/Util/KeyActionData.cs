@@ -13,7 +13,9 @@ namespace BindKey.Util
         private string FilePath { get => string.IsNullOrEmpty(_filePath) ? "save.bk" : _filePath; }
 
         public Dictionary<string /* profile name */, Dictionary<string /* action GUID */, IKeyAction>> ProfileMap { get; private set; }
-        public string SelectedProfile { get; set; }
+
+        private string _selectedProfile = string.Empty;
+        public string SelectedProfile { get => _selectedProfile; set => _selectedProfile = ProfileNames.Contains(value) ? value : _selectedProfile; }
         public Dictionary<string, IKeyAction> SelectedActionMap
         {
             get
@@ -23,15 +25,18 @@ namespace BindKey.Util
             }
         }
         public List<IKeyAction> SelectedActionList { get => SelectedActionMap?.Values.ToList(); }
-        public List<IKeyAction> PinnedActions { get => ProfileMap.Values.SelectMany(d => d.Values).Where(ka => ka.Pinned).ToList(); }
+        public List<IKeyAction> PinnedActions { get => ProfileMap.Values.SelectMany(d => d.Values)
+                                                                        .Where(ka => ka.Pinned)
+                                                                        .GroupBy(ka => ka.GUID)
+                                                                        .Select(grp => grp.FirstOrDefault()).ToList(); }
         public IEnumerable<string> ProfileNames { get => ProfileMap.Keys; }
-        public IEnumerable<IKeyAction> ActionsToHook { get => SelectedActionMap?.Select(kvp => kvp.Value).Where(ka => ka.Enabled && string.IsNullOrWhiteSpace(ka.KeyCombo) == false); }
+        public IEnumerable<IKeyAction> ActionsToHook { get => SelectedActionMap?.Select(kvp => kvp.Value)
+                                                                                .Where(ka => ka.Enabled && string.IsNullOrWhiteSpace(ka.KeyCombo) == false); }
 
         public KeyActionData(string filePath)
         {
             this._filePath = filePath;
             this.ProfileMap = new Dictionary<string, Dictionary<string, IKeyAction>>();
-            this.SelectedProfile = string.Empty;
             this.LoadData();
         }
 
@@ -68,7 +73,12 @@ namespace BindKey.Util
 
         public bool RemoveProfile(string profileToRemove)
         {
-            return ProfileMap.Remove(profileToRemove);
+            bool res = false;
+            if (profileToRemove != null)
+            {
+                res = ProfileMap.Remove(profileToRemove);
+            }
+            return res;
         }
 
         public bool RemoveKeyAction(IKeyAction keyAction)
@@ -118,7 +128,6 @@ namespace BindKey.Util
                 string[] lines = rawText.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                 if (lines.Length > 0)
                 {
-                    this.SelectedProfile = lines[0];
                     for (int i = 1; i < lines.Length; i++)
                     {
                         List<string> items = DefaultKeyAction.REGEX_DELIMITER.Split(lines[i]).ToList();
@@ -141,6 +150,8 @@ namespace BindKey.Util
                             }
                         }
                     }
+
+                    this.SelectedProfile = lines[0];
                 }
             }
             catch

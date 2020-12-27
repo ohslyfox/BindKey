@@ -62,6 +62,7 @@ namespace BindKey
                     }
                 }
             }
+            ProfileComboBox.DropDownHeight = ProfileComboBox.Items.Count > 0 ? 150 : 17;
             EnableDisableNonProfileControls(ProfileComboBox.Items.Count > 0);
         }
 
@@ -73,7 +74,10 @@ namespace BindKey
                 if (listView1.SelectedItems.Count > 0)
                 {
                     var selectedGUID = listView1.SelectedItems[0].Tag.ToString();
-                    res = Data.SelectedActionMap[selectedGUID];
+                    if (Data.SelectedActionMap != null && Data.SelectedActionMap.ContainsKey(selectedGUID))
+                    {
+                        res = Data.SelectedActionMap[selectedGUID];
+                    }
                 }
             }
             catch
@@ -144,7 +148,7 @@ namespace BindKey
             listView1.Items.Clear();
             if (Data.SelectedActionList != null)
             {
-                foreach (IKeyAction keyAction in Data.SelectedActionList.OrderBy(ka => ka.Pinned == false))
+                foreach (IKeyAction keyAction in Data.SelectedActionList.OrderBy(ka => ka.Pinned == false).ThenBy(ka => ka.KeyCombo))
                 {
                     var keyCombo = DefaultKeyAction.GetKeyCombo(keyAction.Keys, true);
                     keyCombo = string.IsNullOrWhiteSpace(keyCombo) ? "None" : keyCombo;
@@ -157,10 +161,10 @@ namespace BindKey
                     }
                     if (keyAction.Pinned)
                     {
-                        newItem.BackColor = Color.FromArgb(200, 200, 200);
+                        newItem.BackColor = Color.FromArgb(230, 230, 230);
                     }
 
-                    newItem.SubItems.Add(keyAction.ToString());
+                    newItem.SubItems.Add($"{(keyAction.Pinned ? ">  " : string.Empty)}{keyAction}");
                     newItem.Tag = keyAction.GUID;
                 }
                 listView1.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.ColumnContent);
@@ -264,22 +268,16 @@ namespace BindKey
         {
             if (ProfileForm == null && AddForm == null)
             {
-                if (Data.RemoveProfile(ProfileComboBox.SelectedItem.ToString()))
+                if (Data.RemoveProfile(ProfileComboBox.SelectedItem?.ToString()))
                 {
                     ProfileComboBox.Items.RemoveAt(ProfileComboBox.SelectedIndex);
-                    if (ProfileComboBox.Items.Count == 0)
-                    {
-                        EnableDisableNonProfileControls(false);
-                        Data.SelectedProfile = string.Empty;
-                        listView1.Items.Clear();
-                    }
-                    else
+                    RefreshProfileList();
+                    if (ProfileComboBox.Items.Count > 0)
                     {
                         Data.SelectedProfile = ProfileComboBox.Items[0].ToString();
                         ProfileComboBox.SelectedIndex = 0;
                     }
                 }
-
                 RefreshListAndKeyHooks();
             }
         }
@@ -318,7 +316,7 @@ namespace BindKey
             Data.SaveData();
         }
 
-        public void listView1_MouseClick(object sender, MouseEventArgs e)
+        private void listView1_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right && AddForm == null && ProfileForm == null)
             {
@@ -328,10 +326,31 @@ namespace BindKey
                     if (selectedKeyAction != null)
                     {
                         pinToolStripMenuItem.Text = selectedKeyAction.Pinned ? "Unpin" : "Pin";
-                        ListItemMenuStrip.Show(Cursor.Position);
+                        ListItemMenuStrip.Show(new Point(Cursor.Position.X - 12, Cursor.Position.Y - 4));
                     }
                 }
             }
+        }
+
+        private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left && AddForm == null && ProfileForm == null)
+            {
+                if (listView1.FocusedItem.Bounds.Contains(e.Location))
+                {
+                    var selectedKeyAction = ResolveSelectedKeyAction();
+                    if (selectedKeyAction != null)
+                    {
+                        CreateAddForm(selectedKeyAction);
+                    }
+                }
+            }
+        }
+
+        private void listView1_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e)
+        {
+            e.NewWidth = this.listView1.Columns[e.ColumnIndex].Width;
+            e.Cancel = true;
         }
 
         private void pinToolStripMenuItem_Click(object sender, EventArgs e)

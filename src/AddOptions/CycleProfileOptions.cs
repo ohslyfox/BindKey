@@ -22,5 +22,16 @@ namespace BindKey.AddOptions
             SetControl<RadioButton>(CONTROL_FORWARD, action.IsForward);
             SetControl<RadioButton>(CONTROL_BACKWARD, action.IsForward == false);
         }
+
+        public override bool Validate()
+        {
+            bool res = base.Validate();
+            if (IsForward == false && IsBackward == false)
+            {
+                MessageBox.Show("Error: forward or backward option must be selected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                res = false;
+            }
+            return res;
+        }
     }
 }
