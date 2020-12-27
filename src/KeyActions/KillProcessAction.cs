@@ -1,6 +1,7 @@
 ﻿using BindKey.AddOptions;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace BindKey.KeyActions
 {
@@ -15,21 +16,25 @@ namespace BindKey.KeyActions
             this.ProcessName = options.ProcessName;
         }
 
-        public KillProcessAction(string[] parts)
-            : base(parts)
+        public KillProcessAction(Dictionary<string, string> propertyMap)
+            : base(propertyMap)
         {
-            this.ProcessName = parts[7];
+            try
+            {
+                this.ProcessName = propertyMap[nameof(ProcessName)];
+            }
+            catch
+            {
+                MessageBox.Show("Failed to create key action. Corrupted save file or bad input.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        protected override List<string> SaveOrder
+        protected override Dictionary<string, string> ItemsToSave
         {
             get
             {
-                List<string> res = new List<string>(base.SaveOrder);
-                res.AddRange(new List<string>
-                {
-                    this.ProcessName
-                });
+                var res = base.ItemsToSave;
+                res[nameof(ProcessName)] = ProcessName;
                 return res;
             }
         }

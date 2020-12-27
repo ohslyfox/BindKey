@@ -1,5 +1,6 @@
 ﻿using BindKey.AddOptions;
 using BindKey.KeyActions;
+using BindKey.Util;
 using Gma.System.MouseKeyHook;
 using System;
 using System.Collections.Generic;
@@ -29,18 +30,20 @@ namespace BindKey
         public const int TOP_OF_FORM_MARGIN = 3;
         public const int BOTTOM_OF_FORM_MARGIN = 10;
         public const int KEY_COMBO_GROUPBOX_HEIGHT = 75;
-        public const int ACTION_GROUPBOX_HEIGHT = 146;
+        public const int ACTION_GROUPBOX_HEIGHT = 174;
         public const int OPEN_PROCESS_PANEL_HEIGHT = 80;
         public const int SCREENSHOT_PROCESS_PANEL_HEIGHT = 190;
         public const int KILL_PROCESS_PANEL_HEIGHT = 190;
         public const int DELETE_FILES_PANEL_HEIGHT = 180;
+        public const int CYCLE_PROFILE_PANEL_HEIGHT = 62;
         public const int SAVE_BUTTON_HEIGHT = 23;
         public static readonly Dictionary<ActionTypes, int> HEIGHT_DICT = new Dictionary<ActionTypes, int>
         {
             { ActionTypes.OpenProcess, OPEN_PROCESS_PANEL_HEIGHT },
             { ActionTypes.ScreenCapture, SCREENSHOT_PROCESS_PANEL_HEIGHT },
             { ActionTypes.KillProcess, KILL_PROCESS_PANEL_HEIGHT },
-            { ActionTypes.DeleteFiles, DELETE_FILES_PANEL_HEIGHT }
+            { ActionTypes.DeleteFiles, DELETE_FILES_PANEL_HEIGHT },
+            { ActionTypes.CycleProfile, CYCLE_PROFILE_PANEL_HEIGHT }
         };
         #endregion
 
@@ -66,12 +69,18 @@ namespace BindKey
                                                                                             CONTROL_MARGIN +
                                                                                             SAVE_BUTTON_HEIGHT +
                                                                                             BOTTOM_OF_FORM_MARGIN);
+        public static readonly Point DIMENSIONS_CYCLE_PROFILE = new Point(DEFAULT_FORM_WIDTH, DIMENSIONS_DEFAULT.Y +
+                                                                                              CYCLE_PROFILE_PANEL_HEIGHT +
+                                                                                              CONTROL_MARGIN +
+                                                                                              SAVE_BUTTON_HEIGHT +
+                                                                                              BOTTOM_OF_FORM_MARGIN);
         public static readonly Dictionary<ActionTypes, Point> DIMENSIONS_DICT = new Dictionary<ActionTypes, Point>
         {
             { ActionTypes.OpenProcess, DIMENSIONS_OPENPROCESS },
             { ActionTypes.ScreenCapture, DIMENSIONS_SCREENCAPTURE},
             { ActionTypes.KillProcess, DIMENSIONS_KILLPROCESS },
-            { ActionTypes.DeleteFiles, DIMENSIONS_DELETEFILES }
+            { ActionTypes.DeleteFiles, DIMENSIONS_DELETEFILES },
+            { ActionTypes.CycleProfile, DIMENSIONS_CYCLE_PROFILE }
         };
         #endregion
 
@@ -79,19 +88,21 @@ namespace BindKey
         public static readonly Point LOCATION_PANELS = new Point(DEFAULT_PANEL_X, DEFAULT_BOTTOM_OF_FORM);
         #endregion
 
+        private KeyActionData Data { get; }
         private PickKeyCombo KeyPicker { get; set; }
         private ScreenGrabber Grabber { get; set; }
         private string LocalActionGUID { get => LocalAction == null ? string.Empty : LocalAction.GUID; }
-        private List<IKeyAction> AvailableNextActions { get; set; }
-        public List<IKeyAction> KeyActions { get; set; }
-        public IKeyAction LocalAction { get; set; }
-        public Keys[] Keys { get; set; } = new Keys[3];
+        private List<IKeyAction> AvailableNextActions { get; }
+        public List<IKeyAction> KeyActions { get; }
+        public IKeyAction LocalAction { get; private set; }
+        public Keys[] Keys { get; private set; } = new Keys[3];
         public Rectangle? SelectedRegion { get => Grabber?.CalculateRegion(); set => Grabber = new ScreenGrabber(this, value); }
         public IKeyAction NextAction { get => NextActionCombo.SelectedItem as IKeyAction; }
 
-        public Add(List<IKeyAction> keyActions, IKeyAction selectedAction)
+        public Add(KeyActionData data, IKeyAction selectedAction)
         {
-            this.KeyActions = keyActions;
+            this.Data = data;
+            this.KeyActions = data.SelectedActionList;
             this.LocalAction = selectedAction;
             this.AvailableNextActions = selectedAction == null ? this.KeyActions : this.KeyActions.Where(ka => KeyActionMeetsDisplayCriteria(ka)).ToList();
 
@@ -213,11 +224,11 @@ namespace BindKey
 
                 if (LocalAction == null)
                 {
-                    KeyActions.Add(newAction);
+                    Data.SelectedActionMap[newAction.GUID] = newAction;
                 }
                 else
                 {
-                    KeyActions[KeyActions.IndexOf(LocalAction)] = newAction;
+                    Data.SelectedActionMap[LocalAction.GUID] = newAction;
                 }
 
                 this.Close();
@@ -232,6 +243,7 @@ namespace BindKey
             PanelScreenCapture.Visible = type == ActionTypes.ScreenCapture;
             PanelKillRestartProcess.Visible = type == ActionTypes.KillProcess;
             PanelDeleteFiles.Visible = type == ActionTypes.DeleteFiles;
+            PanelCycleProfile.Visible = type == ActionTypes.CycleProfile;
         }
 
         private void ActionRadio_CheckedChanged(object sender, EventArgs e)

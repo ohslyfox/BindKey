@@ -26,28 +26,34 @@ namespace BindKey.KeyActions
             this.FolderPath = options.FolderPath;
         }
 
-        public ScreenCaptureAction(string[] parts)
-            : base(parts)
+        public ScreenCaptureAction(Dictionary<string, string> propertyMap)
+            : base(propertyMap)
         {
-            Rectangle rec = new Rectangle();
-            rec.X = Int32.Parse(parts[7]);
-            rec.Y = Int32.Parse(parts[8]);
-            rec.Width = Int32.Parse(parts[9]);
-            rec.Height = Int32.Parse(parts[10]);
-            this.ScreenRegion = rec;
-            this.FolderPath = parts[11];
+            try
+            {
+                this.FolderPath = propertyMap[nameof(FolderPath)];
+
+                var region = propertyMap[nameof(ScreenRegion)].Split(',');
+                var rec = new Rectangle();
+                rec.X = Int32.Parse(region[0]);
+                rec.Y = Int32.Parse(region[1]);
+                rec.Width = Int32.Parse(region[2]);
+                rec.Height = Int32.Parse(region[3]);
+                this.ScreenRegion = rec;
+            }
+            catch
+            {
+                MessageBox.Show("Failed to create key action. Corrupted save file or bad input.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        protected override List<string> SaveOrder
+        protected override Dictionary<string, string> ItemsToSave
         {
             get
             {
-                List<string> res = new List<string>(base.SaveOrder);
-                res.AddRange(new List<string>
-                {
-                    ScreenRegion.X.ToString(), ScreenRegion.Y.ToString(), ScreenRegion.Width.ToString(),
-                    ScreenRegion.Height.ToString(), this.FolderPath
-                });
+                var res = base.ItemsToSave;
+                res[nameof(ScreenRegion)] = $"{ScreenRegion.X},{ScreenRegion.Y},{ScreenRegion.Width},{ScreenRegion.Height}";
+                res[nameof(FolderPath)] = FolderPath;
                 return res;
             }
         }

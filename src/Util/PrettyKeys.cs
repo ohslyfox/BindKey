@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 
-namespace BindKey
+namespace BindKey.Util
 {
     internal static class PrettyKeys
     {

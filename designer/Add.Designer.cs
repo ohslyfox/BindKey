@@ -36,6 +36,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.OpenFilePathTextBox = new System.Windows.Forms.TextBox();
             this.ActionGroupBox = new System.Windows.Forms.GroupBox();
+            this.CycleProfile = new System.Windows.Forms.RadioButton();
             this.DeleteFiles = new System.Windows.Forms.RadioButton();
             this.NextActionCombo = new System.Windows.Forms.ComboBox();
             this.NextActionLabel = new System.Windows.Forms.Label();
@@ -73,6 +74,10 @@
             this.DeleteHoursTextBox = new System.Windows.Forms.TextBox();
             this.DeleteDaysTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.PanelCycleProfile = new System.Windows.Forms.Panel();
+            this.RadioCycleBackward = new System.Windows.Forms.RadioButton();
+            this.RadioCycleForward = new System.Windows.Forms.RadioButton();
+            this.label9 = new System.Windows.Forms.Label();
             this.panelProcess.SuspendLayout();
             this.ActionGroupBox.SuspendLayout();
             this.PanelScreenCapture.SuspendLayout();
@@ -80,6 +85,7 @@
             this.PanelKillRestartProcess.SuspendLayout();
             this.KeyComboGroupBox.SuspendLayout();
             this.PanelDeleteFiles.SuspendLayout();
+            this.PanelCycleProfile.SuspendLayout();
             this.SuspendLayout();
             // 
             // OpenProcess
@@ -148,6 +154,7 @@
             // 
             // ActionGroupBox
             // 
+            this.ActionGroupBox.Controls.Add(this.CycleProfile);
             this.ActionGroupBox.Controls.Add(this.DeleteFiles);
             this.ActionGroupBox.Controls.Add(this.NextActionCombo);
             this.ActionGroupBox.Controls.Add(this.NextActionLabel);
@@ -157,10 +164,22 @@
             this.ActionGroupBox.Controls.Add(this.OpenProcess);
             this.ActionGroupBox.Location = new System.Drawing.Point(12, 85);
             this.ActionGroupBox.Name = "ActionGroupBox";
-            this.ActionGroupBox.Size = new System.Drawing.Size(248, 146);
+            this.ActionGroupBox.Size = new System.Drawing.Size(248, 174);
             this.ActionGroupBox.TabIndex = 16;
             this.ActionGroupBox.TabStop = false;
             this.ActionGroupBox.Text = "Action";
+            // 
+            // CycleProfile
+            // 
+            this.CycleProfile.AutoSize = true;
+            this.CycleProfile.Location = new System.Drawing.Point(9, 114);
+            this.CycleProfile.Name = "CycleProfile";
+            this.CycleProfile.Size = new System.Drawing.Size(83, 17);
+            this.CycleProfile.TabIndex = 21;
+            this.CycleProfile.TabStop = true;
+            this.CycleProfile.Text = "Cycle Profile";
+            this.CycleProfile.UseVisualStyleBackColor = true;
+            this.CycleProfile.CheckedChanged += new System.EventHandler(this.ActionRadio_CheckedChanged);
             // 
             // DeleteFiles
             // 
@@ -178,7 +197,7 @@
             // 
             this.NextActionCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.NextActionCombo.FormattingEnabled = true;
-            this.NextActionCombo.Location = new System.Drawing.Point(77, 114);
+            this.NextActionCombo.Location = new System.Drawing.Point(77, 142);
             this.NextActionCombo.Name = "NextActionCombo";
             this.NextActionCombo.Size = new System.Drawing.Size(165, 21);
             this.NextActionCombo.TabIndex = 6;
@@ -186,7 +205,7 @@
             // NextActionLabel
             // 
             this.NextActionLabel.AutoSize = true;
-            this.NextActionLabel.Location = new System.Drawing.Point(6, 117);
+            this.NextActionLabel.Location = new System.Drawing.Point(6, 145);
             this.NextActionLabel.Name = "NextActionLabel";
             this.NextActionLabel.Size = new System.Drawing.Size(65, 13);
             this.NextActionLabel.TabIndex = 20;
@@ -557,11 +576,55 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Delete Files Older Than:";
             // 
+            // PanelCycleProfile
+            // 
+            this.PanelCycleProfile.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PanelCycleProfile.Controls.Add(this.RadioCycleBackward);
+            this.PanelCycleProfile.Controls.Add(this.RadioCycleForward);
+            this.PanelCycleProfile.Controls.Add(this.label9);
+            this.PanelCycleProfile.Location = new System.Drawing.Point(363, 693);
+            this.PanelCycleProfile.Name = "PanelCycleProfile";
+            this.PanelCycleProfile.Size = new System.Drawing.Size(248, 62);
+            this.PanelCycleProfile.TabIndex = 21;
+            this.PanelCycleProfile.Visible = false;
+            // 
+            // RadioCycleBackward
+            // 
+            this.RadioCycleBackward.AutoSize = true;
+            this.RadioCycleBackward.Location = new System.Drawing.Point(111, 28);
+            this.RadioCycleBackward.Name = "RadioCycleBackward";
+            this.RadioCycleBackward.Size = new System.Drawing.Size(73, 17);
+            this.RadioCycleBackward.TabIndex = 2;
+            this.RadioCycleBackward.Text = "Backward";
+            this.RadioCycleBackward.UseVisualStyleBackColor = true;
+            // 
+            // RadioCycleForward
+            // 
+            this.RadioCycleForward.AutoSize = true;
+            this.RadioCycleForward.Checked = true;
+            this.RadioCycleForward.Location = new System.Drawing.Point(12, 30);
+            this.RadioCycleForward.Name = "RadioCycleForward";
+            this.RadioCycleForward.Size = new System.Drawing.Size(63, 17);
+            this.RadioCycleForward.TabIndex = 1;
+            this.RadioCycleForward.TabStop = true;
+            this.RadioCycleForward.Text = "Forward";
+            this.RadioCycleForward.UseVisualStyleBackColor = true;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(9, 11);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(81, 13);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "Cycle Direction:";
+            // 
             // Add
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1249, 860);
+            this.Controls.Add(this.PanelCycleProfile);
             this.Controls.Add(this.PanelDeleteFiles);
             this.Controls.Add(this.KeyComboGroupBox);
             this.Controls.Add(this.PanelKillRestartProcess);
@@ -589,6 +652,8 @@
             this.KeyComboGroupBox.PerformLayout();
             this.PanelDeleteFiles.ResumeLayout(false);
             this.PanelDeleteFiles.PerformLayout();
+            this.PanelCycleProfile.ResumeLayout(false);
+            this.PanelCycleProfile.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -638,5 +703,10 @@
         private System.Windows.Forms.TextBox DeleteSearchPatternTextBox;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.RadioButton DeleteFiles;
+        private System.Windows.Forms.RadioButton CycleProfile;
+        private System.Windows.Forms.Panel PanelCycleProfile;
+        private System.Windows.Forms.RadioButton RadioCycleBackward;
+        private System.Windows.Forms.RadioButton RadioCycleForward;
+        private System.Windows.Forms.Label label9;
     }
 }

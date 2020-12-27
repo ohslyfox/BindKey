@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 
 namespace BindKey.KeyActions
 {
@@ -26,27 +27,35 @@ namespace BindKey.KeyActions
             this.Seconds = options.Seconds;
         }
 
-        public DeleteFilesAction(string[] parts)
-            : base(parts)
+        public DeleteFilesAction(Dictionary<string, string> propertyMap)
+            : base(propertyMap)
         {
-            this.FolderPath = parts[7];
-            this.SearchPattern = parts[8];
-            this.Days = parts[9];
-            this.Hours = parts[10];
-            this.Minutes = parts[11];
-            this.Seconds = parts[12];
+            try
+            {
+                this.FolderPath = propertyMap[nameof(FolderPath)];
+                this.SearchPattern = propertyMap[nameof(SearchPattern)];
+                this.Days = propertyMap[nameof(Days)];
+                this.Hours = propertyMap[nameof(Hours)];
+                this.Minutes = propertyMap[nameof(Minutes)];
+                this.Seconds = propertyMap[nameof(Seconds)];
+            }
+            catch
+            {
+                MessageBox.Show("Failed to create key action. Corrupted save file or bad input.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        protected override List<string> SaveOrder
+        protected override Dictionary<string, string> ItemsToSave
         {
             get
             {
-                List<string> res = new List<string>(base.SaveOrder);
-                res.AddRange(new List<string>
-                {
-                    this.FolderPath, this.SearchPattern, this.Days,
-                    this.Hours, this.Minutes, this.Seconds
-                });
+                var res = base.ItemsToSave;
+                res[nameof(FolderPath)] = FolderPath;
+                res[nameof(SearchPattern)] = SearchPattern;
+                res[nameof(Days)] = Days;
+                res[nameof(Hours)] = Hours;
+                res[nameof(Minutes)] = Minutes;
+                res[nameof(Seconds)] = Seconds;
                 return res;
             }
         }

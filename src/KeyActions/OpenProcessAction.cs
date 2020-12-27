@@ -1,6 +1,7 @@
 ﻿using BindKey.AddOptions;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace BindKey.KeyActions
 {
@@ -17,22 +18,27 @@ namespace BindKey.KeyActions
             this.AsAdmin = options.AsAdmin;
         }
 
-        public OpenProcessAction(string[] parts)
-            : base(parts)
+        public OpenProcessAction(Dictionary<string, string> propertyMap)
+            : base(propertyMap)
         {
-            this.FilePath = parts[7];
-            this.AsAdmin = bool.Parse(parts[8]);
+            try
+            {
+                this.FilePath = propertyMap[nameof(FilePath)];
+                this.AsAdmin = bool.Parse(propertyMap[nameof(AsAdmin)]);
+            }
+            catch
+            {
+                MessageBox.Show("Failed to create key action. Corrupted save file or bad input.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        protected override List<string> SaveOrder
+        protected override Dictionary<string, string> ItemsToSave
         {
             get
             {
-                List<string> res = new List<string>(base.SaveOrder);
-                res.AddRange(new List<string>
-                {
-                    this.FilePath, this.AsAdmin.ToString()
-                });
+                var res = base.ItemsToSave;
+                res[nameof(FilePath)] = FilePath;
+                res[nameof(AsAdmin)] = AsAdmin.ToString();
                 return res;
             }
         }

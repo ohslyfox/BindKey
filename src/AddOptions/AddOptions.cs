@@ -55,9 +55,9 @@ namespace BindKey.AddOptions
             }
             if (this.Enabled &&
                 AddForm.KeyActions.Any(ka => ka.Enabled &&
-                                     ka.Equals(AddForm.LocalAction) == false &&
-                                     string.IsNullOrWhiteSpace(ka.KeyCombo) == false &&
-                                     ka.KeyCombo == DefaultKeyAction.GetKeyCombo(Keys, false)))
+                                       ka.Equals(AddForm.LocalAction) == false &&
+                                       string.IsNullOrWhiteSpace(ka.KeyCombo) == false &&
+                                       ka.KeyCombo == DefaultKeyAction.GetKeyCombo(Keys, false)))
             {
                 MessageBox.Show("Error: an event is already bound to the key combo " + DefaultKeyAction.GetKeyCombo(Keys, true) + ".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;

@@ -12,6 +12,22 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>C:\Users\Patrick\Desktop\test\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -37,6 +53,18 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>keyboard_5643.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>748D7C82C46BAEEB622F0E51B25DA3F56F5FFEE8</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>BindKey_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Gma.System.MouseKeyHook, Version=5.6.130.0, Culture=neutral, processorArchitecture=MSIL">
@@ -65,6 +93,7 @@
     <Compile Include="AddOptions\AddOptions.cs" />
     <Compile Include="AddOptions\AddOptionsFactory.cs" />
     <Compile Include="AddOptions\AddOptionsUtil.cs" />
+    <Compile Include="AddOptions\CycleProfileOptions.cs" />
     <Compile Include="AddOptions\DeleteFilesOptions.cs" />
     <Compile Include="AddOptions\KillProcessOptions.cs" />
     <Compile Include="AddOptions\OpenProcessOptions.cs" />
@@ -75,13 +104,14 @@
     <Compile Include="BindKey.Designer.cs">
       <DependentUpon>BindKey.cs</DependentUpon>
     </Compile>
+    <Compile Include="KeyActions\CycleProfileAction.cs" />
     <Compile Include="KeyActions\DeleteFilesAction.cs" />
     <Compile Include="KeyActions\KeyAction.cs" />
     <Compile Include="KeyActions\KeyActionFactory.cs" />
     <Compile Include="KeyActions\KillProcessAction.cs" />
     <Compile Include="KeyActions\OpenProcessAction.cs" />
     <Compile Include="KeyActions\ScreenCaptureAction.cs" />
-    <Compile Include="PrettyKeys.cs" />
+    <Compile Include="Util\PrettyKeys.cs" />
     <Compile Include="Profile.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -90,7 +120,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SecretIO.cs" />
+    <Compile Include="Util\KeyActionData.cs" />
+    <Compile Include="Util\SecretIO.cs" />
     <EmbeddedResource Include="Add.resx">
       <DependentUpon>Add.cs</DependentUpon>
     </EmbeddedResource>
@@ -109,6 +140,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="BindKey_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -125,6 +157,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="keyboard_5643.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
