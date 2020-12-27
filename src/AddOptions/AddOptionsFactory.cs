@@ -23,6 +23,9 @@ namespace BindKey.AddOptions
                 case ActionTypes.DeleteFiles:
                     res = new DeleteFilesOptions(addForm);
                     break;
+                case ActionTypes.CycleProfile:
+                    res = new CycleProfileOptions(addForm);
+                    break;
                 default:
                     throw new ArgumentException($"DEV ERROR: could not create add options from factory of type {type}.");
             }

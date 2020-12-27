@@ -1,5 +1,6 @@
 ﻿using BindKey.AddOptions;
 using System;
+using System.Collections.Generic;
 
 namespace BindKey.KeyActions
 {
@@ -23,30 +24,36 @@ namespace BindKey.KeyActions
                 case ActionTypes.DeleteFiles:
                     res = new DeleteFilesAction(options as DeleteFilesOptions, GUID);
                     break;
+                case ActionTypes.CycleProfile:
+                    res = new CycleProfileAction(options as CycleProfileOptions, GUID);
+                    break;
                 default:
                     throw new ArgumentException($"DEV ERROR: could not create key action from factory of type {type}.");
             }
             return res;
         }
 
-        public static IKeyAction GetNewKeyActionOfType(string[] parts)
+        public static IKeyAction GetNewKeyActionOfType(Dictionary<string, string> propertyMap)
         {
             IKeyAction? res = null;
-            ActionTypes type = (ActionTypes)Enum.Parse(typeof(ActionTypes), parts[0], true);
+            ActionTypes type = (ActionTypes)Enum.Parse(typeof(ActionTypes), propertyMap["Type"], true);
 
             switch (type)
             {
                 case ActionTypes.OpenProcess:
-                    res = new OpenProcessAction(parts);
+                    res = new OpenProcessAction(propertyMap);
                     break;
                 case ActionTypes.ScreenCapture:
-                    res = new ScreenCaptureAction(parts);
+                    res = new ScreenCaptureAction(propertyMap);
                     break;
                 case ActionTypes.KillProcess:
-                    res = new KillProcessAction(parts);
+                    res = new KillProcessAction(propertyMap);
                     break;
                 case ActionTypes.DeleteFiles:
-                    res = new DeleteFilesAction(parts);
+                    res = new DeleteFilesAction(propertyMap);
+                    break;
+                case ActionTypes.CycleProfile:
+                    res = new CycleProfileAction(propertyMap);
                     break;
                 default:
                     throw new ArgumentException($"DEV ERROR: could not create key action from factory of type {type}.");

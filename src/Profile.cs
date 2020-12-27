@@ -1,4 +1,5 @@
 ﻿using BindKey.KeyActions;
+using BindKey.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,23 +9,25 @@ namespace BindKey
 {
     internal partial class Profile : Form
     {
-        private Dictionary<string, List<IKeyAction>> ProfileData { get; set; }
-        public Profile(Dictionary<string, List<IKeyAction>> data)
+        private KeyActionData Data { get; }
+        public Profile(KeyActionData data)
         {
             InitializeComponent();
-            ProfileData = data;
+            this.Data = data;
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            Save();   
+            Save();
         }
 
         private void Save()
         {
             if (ValidateForm())
             {
-                ProfileData[ProfileTextBox.Text.Trim()] = new List<IKeyAction>();
+                string profileName = ProfileTextBox.Text.Trim();
+                Data.AddProfile(profileName);
+                Data.SelectedProfile = profileName;
                 this.Close();
                 this.Dispose();
             }
@@ -46,7 +49,8 @@ namespace BindKey
         private bool ValidateForm()
         {
             bool res = true;
-            if (ProfileData.Any(kvp => kvp.Key.ToUpper() == ProfileTextBox.Text.Trim().ToUpper())) {
+            if (Data.ProfileMap.Any(kvp => kvp.Key.ToUpper() == ProfileTextBox.Text.Trim().ToUpper()))
+            {
                 MessageBox.Show($"Profile name \"{ProfileTextBox.Text.Trim()}\" already exists.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 res = false;
             }

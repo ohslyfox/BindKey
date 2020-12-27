@@ -3,13 +3,23 @@ using System.Text;
 using System.Security.Cryptography;
 using System.IO;
 
-namespace BindKey
+namespace BindKey.Util
 {
     internal class SecretIO
     {
         private IEncryptDecrypt Crypto { get; set; }
 
-        public SecretIO()
+        private static SecretIO _singletonInstance = null;
+        public static SecretIO GetInstance()
+        {
+            if (_singletonInstance == null)
+            {
+                _singletonInstance = new SecretIO();
+            }
+            return _singletonInstance;
+        }
+
+        private SecretIO()
         {
             Crypto = new Cryptography();
         }
@@ -32,16 +42,12 @@ namespace BindKey
 
         private class Cryptography : IEncryptDecrypt
         {
-            #region Settings
-
             private static int _iterations = 2;
             private static int _keySize = 256;
 
             private static string _hash = "SHA1";
             private static string _salt = "gtuaxzz233ajnc6f"; // Random
             private static string _vector = "8921opbsl35khasz"; // Random
-
-            #endregion
 
             public string Encrypt(string value, string password)
             {

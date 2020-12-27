@@ -9,20 +9,22 @@ namespace BindKey.AddOptions
 {
     internal interface IAddOptions
     {
-        public ActionTypes Type { get; }
-        public Keys[] Keys { get; }
-        public bool Enabled { get; }
-        public void FillForm(IKeyAction action);
-        public bool Validate();
+        ActionTypes Type { get; }
+        Keys[] Keys { get; }
+        bool Enabled { get; }
+        bool Pinned { get; }
+        void FillForm(IKeyAction action);
+        bool Validate();
     }
 
     internal abstract class DefaultAddOptions : IAddOptions
     {
         public const string CONTROL_ENABLED = "CheckBoxEnabled";
+        public const string CONTROL_PINNED = "CheckBoxPinned";
 
         public abstract ActionTypes Type { get; }
-        
         public bool Enabled { get => (GetControl(CONTROL_ENABLED) as CheckBox).Checked; }
+        public bool Pinned { get => (GetControl(CONTROL_PINNED) as CheckBox).Checked; }
         public Keys[] Keys { get => this.AddForm.Keys; }
         public IKeyAction NextAction { get => this.AddForm.NextAction; }
 
@@ -55,22 +57,23 @@ namespace BindKey.AddOptions
             }
             if (this.Enabled &&
                 AddForm.KeyActions.Any(ka => ka.Enabled &&
-                                     ka.Equals(AddForm.LocalAction) == false &&
-                                     string.IsNullOrWhiteSpace(ka.KeyCombo) == false &&
-                                     ka.KeyCombo == DefaultKeyAction.GetKeyCombo(Keys, false)))
+                                       ka.Equals(AddForm.LocalAction) == false &&
+                                       string.IsNullOrWhiteSpace(ka.KeyCombo) == false &&
+                                       ka.KeyCombo == DefaultKeyAction.GetKeyCombo(Keys, false)))
             {
                 MessageBox.Show("Error: an event is already bound to the key combo " + DefaultKeyAction.GetKeyCombo(Keys, true) + ".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
             return true;
         }
-        
+
         public void FillForm(IKeyAction action)
         {
             var keys = action.Keys.Clone() as Keys[];
             this.AddForm.Keys[0] = keys[0];
             this.AddForm.Keys[1] = keys[1];
             this.AddForm.Keys[2] = keys[2];
+            SetControl<CheckBox>(CONTROL_PINNED, action.Pinned);
             SetControl<CheckBox>(CONTROL_ENABLED, action.Enabled);
             SetControl<RadioButton>(action.Type.ToString(), true);
         }

@@ -24,6 +24,9 @@ namespace BindKey.AddOptions
                 case ActionTypes.DeleteFiles:
                     ((DeleteFilesOptions)options).FillForm(action as DeleteFilesAction);
                     break;
+                case ActionTypes.CycleProfile:
+                    ((CycleProfileOptions)options).FillForm(action as CycleProfileAction);
+                    break;
                 default:
                     throw new ArgumentException($"DEV ERROR: could not fill form from type {type}.");
             }
@@ -46,6 +49,9 @@ namespace BindKey.AddOptions
                     break;
                 case ActionTypes.DeleteFiles:
                     res = ((DeleteFilesOptions)options).Validate();
+                    break;
+                case ActionTypes.CycleProfile:
+                    res = ((CycleProfileOptions)options).Validate();
                     break;
                 default:
                     throw new ArgumentException($"DEV ERROR: could not validate form from type {type}.");

@@ -34,10 +34,10 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ButtonAdd = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.githubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disableAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,7 +45,12 @@
             this.label2 = new System.Windows.Forms.Label();
             this.ProfileAdd = new System.Windows.Forms.Button();
             this.ProfileRemove = new System.Windows.Forms.Button();
+            this.ListItemMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.pinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
+            this.ListItemMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // listView1
@@ -67,6 +72,9 @@
             this.listView1.TabStop = false;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.ColumnWidthChanging += new System.Windows.Forms.ColumnWidthChangingEventHandler(this.listView1_ColumnWidthChanging);
+            this.listView1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
+            this.listView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseDoubleClick);
             // 
             // columnHeader1
             // 
@@ -81,36 +89,14 @@
             // 
             // ButtonAdd
             // 
-            this.ButtonAdd.Location = new System.Drawing.Point(12, 173);
+            this.ButtonAdd.Location = new System.Drawing.Point(12, 175);
             this.ButtonAdd.Name = "ButtonAdd";
-            this.ButtonAdd.Size = new System.Drawing.Size(130, 23);
+            this.ButtonAdd.Size = new System.Drawing.Size(400, 23);
             this.ButtonAdd.TabIndex = 1;
             this.ButtonAdd.TabStop = false;
             this.ButtonAdd.Text = "Add Event";
             this.ButtonAdd.UseVisualStyleBackColor = true;
             this.ButtonAdd.Click += new System.EventHandler(this.ButtonAdd_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(147, 173);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(130, 23);
-            this.button1.TabIndex = 2;
-            this.button1.TabStop = false;
-            this.button1.Text = "Edit Event";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(282, 173);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(130, 23);
-            this.button2.TabIndex = 3;
-            this.button2.TabStop = false;
-            this.button2.Text = "Remove Event";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // notifyIcon1
             // 
@@ -123,25 +109,39 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem,
             this.disableAllToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.contextMenuStrip1.ShowImageMargin = false;
-            this.contextMenuStrip1.Size = new System.Drawing.Size(105, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(130, 92);
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.githubToolStripMenuItem});
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            // 
+            // githubToolStripMenuItem
+            // 
+            this.githubToolStripMenuItem.Name = "githubToolStripMenuItem";
+            this.githubToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.githubToolStripMenuItem.Text = "GitHub";
+            this.githubToolStripMenuItem.Click += new System.EventHandler(this.githubToolStripMenuItem_Click);
             // 
             // disableAllToolStripMenuItem
             // 
             this.disableAllToolStripMenuItem.Name = "disableAllToolStripMenuItem";
-            this.disableAllToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.disableAllToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.disableAllToolStripMenuItem.Text = "Disable All";
             this.disableAllToolStripMenuItem.Click += new System.EventHandler(this.disableAllToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -149,14 +149,16 @@
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShowShortcutKeys = false;
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // ProfileComboBox
             // 
+            this.ProfileComboBox.DropDownHeight = 150;
             this.ProfileComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ProfileComboBox.FormattingEnabled = true;
+            this.ProfileComboBox.IntegralHeight = false;
             this.ProfileComboBox.Location = new System.Drawing.Point(91, 7);
             this.ProfileComboBox.Name = "ProfileComboBox";
             this.ProfileComboBox.Size = new System.Drawing.Size(176, 21);
@@ -195,17 +197,45 @@
             this.ProfileRemove.UseVisualStyleBackColor = true;
             this.ProfileRemove.Click += new System.EventHandler(this.ProfileRemove_Click);
             // 
+            // ListItemMenuStrip
+            // 
+            this.ListItemMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.pinToolStripMenuItem,
+            this.editToolStripMenuItem,
+            this.removeToolStripMenuItem});
+            this.ListItemMenuStrip.Name = "ListItemMenuStrip";
+            this.ListItemMenuStrip.Size = new System.Drawing.Size(118, 70);
+            // 
+            // pinToolStripMenuItem
+            // 
+            this.pinToolStripMenuItem.Name = "pinToolStripMenuItem";
+            this.pinToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.pinToolStripMenuItem.Text = "Pin";
+            this.pinToolStripMenuItem.Click += new System.EventHandler(this.pinToolStripMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.editToolStripMenuItem.Text = "Edit";
+            this.editToolStripMenuItem.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
+            // 
+            // removeToolStripMenuItem
+            // 
+            this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
+            this.removeToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.removeToolStripMenuItem.Text = "Remove";
+            this.removeToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
+            // 
             // BindKey
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(423, 203);
+            this.ClientSize = new System.Drawing.Size(424, 204);
             this.Controls.Add(this.ProfileRemove);
             this.Controls.Add(this.ProfileAdd);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.ProfileComboBox);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.ButtonAdd);
             this.Controls.Add(this.listView1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
@@ -213,8 +243,9 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "BindKey";
-            this.Text = "BindKey by slyfox";
+            this.Text = "BindKey";
             this.contextMenuStrip1.ResumeLayout(false);
+            this.ListItemMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -226,8 +257,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.Button ButtonAdd;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
@@ -237,6 +266,12 @@
         private System.Windows.Forms.Button ProfileAdd;
         private System.Windows.Forms.Button ProfileRemove;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip ListItemMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem pinToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem githubToolStripMenuItem;
     }
 }
 
