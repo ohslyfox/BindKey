@@ -29,9 +29,3 @@ BindKey also supports chaining actions together. In this example, a kill-process
 * A key binding is not required for an action. This can be helpful if you wish to create an action for the sole purpose of being chained together with a parent action.
 
 * BindKey will search for a 'save.bk' file in the same folder it is located which will store the data from the last session. BindKey must be closed or saved via the system tray to create a save file.
-
-# Downloads
-
-* [Ready-to-build solution](https://drive.google.com/file/d/18KSfFDcYu11tJGMoYaKzsIZtwyzT1lcJ/view?usp=sharing)
-
-* [Executable](https://drive.google.com/file/d/1uW2snpEnI9koSzt5auZzSL1Ewy3RRUX5/view?usp=sharing)
