@@ -228,7 +228,13 @@ namespace BindKey
                 }
                 else
                 {
-                    Data.SelectedActionMap[LocalAction.GUID] = newAction;
+                    foreach (var dict in Data.ProfileMap.Values)
+                    {
+                        if (dict.ContainsKey(LocalAction.GUID))
+                        {
+                            dict[LocalAction.GUID] = newAction;
+                        }
+                    }
                 }
 
                 this.Close();

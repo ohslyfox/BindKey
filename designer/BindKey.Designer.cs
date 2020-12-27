@@ -47,6 +47,8 @@
             this.pinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.githubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.ListItemMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -85,7 +87,7 @@
             // 
             // ButtonAdd
             // 
-            this.ButtonAdd.Location = new System.Drawing.Point(12, 173);
+            this.ButtonAdd.Location = new System.Drawing.Point(12, 175);
             this.ButtonAdd.Name = "ButtonAdd";
             this.ButtonAdd.Size = new System.Drawing.Size(400, 23);
             this.ButtonAdd.TabIndex = 1;
@@ -105,13 +107,14 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem,
             this.disableAllToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStrip1.ShowImageMargin = false;
-            this.contextMenuStrip1.Size = new System.Drawing.Size(105, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(105, 92);
             // 
             // disableAllToolStripMenuItem
             // 
@@ -184,34 +187,49 @@
             this.editToolStripMenuItem,
             this.removeToolStripMenuItem});
             this.ListItemMenuStrip.Name = "ListItemMenuStrip";
-            this.ListItemMenuStrip.Size = new System.Drawing.Size(181, 92);
+            this.ListItemMenuStrip.Size = new System.Drawing.Size(118, 70);
             // 
             // pinToolStripMenuItem
             // 
             this.pinToolStripMenuItem.Name = "pinToolStripMenuItem";
-            this.pinToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.pinToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.pinToolStripMenuItem.Text = "Pin";
             this.pinToolStripMenuItem.Click += new System.EventHandler(this.pinToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.editToolStripMenuItem.Text = "Edit";
             this.editToolStripMenuItem.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
             // 
             // removeToolStripMenuItem
             // 
             this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
-            this.removeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.removeToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
             this.removeToolStripMenuItem.Text = "Remove";
             this.removeToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.githubToolStripMenuItem});
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(104, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            // 
+            // githubToolStripMenuItem
+            // 
+            this.githubToolStripMenuItem.Name = "githubToolStripMenuItem";
+            this.githubToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.githubToolStripMenuItem.Text = "GitHub";
+            this.githubToolStripMenuItem.Click += new System.EventHandler(this.githubToolStripMenuItem_Click);
             // 
             // BindKey
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(423, 203);
+            this.ClientSize = new System.Drawing.Size(424, 204);
             this.Controls.Add(this.ProfileRemove);
             this.Controls.Add(this.ProfileAdd);
             this.Controls.Add(this.label2);
@@ -223,7 +241,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "BindKey";
-            this.Text = "BindKey by slyfox";
+            this.Text = "BindKey";
             this.contextMenuStrip1.ResumeLayout(false);
             this.ListItemMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -250,6 +268,8 @@
         private System.Windows.Forms.ToolStripMenuItem pinToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem githubToolStripMenuItem;
     }
 }
 

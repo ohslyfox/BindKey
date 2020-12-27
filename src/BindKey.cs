@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Linq;
 using BindKey.KeyActions;
 using BindKey.Util;
-using System.Linq;
 
 namespace BindKey
 {
@@ -87,6 +87,15 @@ namespace BindKey
         {
             listView1.Enabled = enable;
             ButtonAdd.Enabled = enable;
+        }
+
+        private void EnableDisableControls(bool enable)
+        {
+            listView1.Enabled = enable;
+            ButtonAdd.Enabled = enable;
+            ProfileComboBox.Enabled = enable;
+            ProfileAdd.Enabled = enable;
+            ProfileRemove.Enabled = enable;
         }
 
         private void CloseButtonClicked(object sender, FormClosingEventArgs e)
@@ -172,6 +181,7 @@ namespace BindKey
         private void AddFormClosed(object sender, FormClosedEventArgs e)
         {
             this.BringToFront();
+            this.EnableDisableControls(true);
             this.Data.RefreshNextKeyActions();
             this.RefreshListAndKeyHooks();
             this.AddForm = null;
@@ -181,6 +191,7 @@ namespace BindKey
         {
             if (AddForm == null && ProfileForm == null)
             {
+                EnableDisableControls(false);
                 RecreateKeyboardHook();
                 AddForm = new Add(Data, selectedAction);
                 AddForm.StartPosition = FormStartPosition.Manual;
@@ -230,6 +241,7 @@ namespace BindKey
         {
             if (ProfileForm == null && AddForm == null)
             {
+                EnableDisableControls(false);
                 ProfileForm = new Profile(Data);
                 ProfileForm.StartPosition = FormStartPosition.Manual;
                 ProfileForm.Location = new Point((this.Location.X + this.Width / 2) - ProfileForm.Width / 2, (this.Location.Y + this.Height / 2) - ProfileForm.Height / 2);
@@ -244,6 +256,7 @@ namespace BindKey
             ProfileForm = null;
             RefreshProfileList();
             RefreshListAndKeyHooks();
+            EnableDisableControls(true);
             EnableDisableNonProfileControls(ProfileComboBox.Items.Count > 0);
         }
 
@@ -307,7 +320,7 @@ namespace BindKey
 
         public void listView1_MouseClick(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right && AddForm == null && ProfileForm == null)
             {
                 if (listView1.FocusedItem.Bounds.Contains(e.Location))
                 {
@@ -356,6 +369,11 @@ namespace BindKey
                     }
                 }
             }
+        }
+
+        private void githubToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/ohslyfox/BindKey");
         }
     }
 }

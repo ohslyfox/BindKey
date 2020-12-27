@@ -78,6 +78,7 @@
             this.RadioCycleBackward = new System.Windows.Forms.RadioButton();
             this.RadioCycleForward = new System.Windows.Forms.RadioButton();
             this.label9 = new System.Windows.Forms.Label();
+            this.CheckBoxPinned = new System.Windows.Forms.CheckBox();
             this.panelProcess.SuspendLayout();
             this.ActionGroupBox.SuspendLayout();
             this.PanelScreenCapture.SuspendLayout();
@@ -619,11 +620,23 @@
             this.label9.TabIndex = 0;
             this.label9.Text = "Cycle Direction:";
             // 
+            // CheckBoxPinned
+            // 
+            this.CheckBoxPinned.AutoSize = true;
+            this.CheckBoxPinned.Location = new System.Drawing.Point(617, 23);
+            this.CheckBoxPinned.Name = "CheckBoxPinned";
+            this.CheckBoxPinned.Size = new System.Drawing.Size(108, 17);
+            this.CheckBoxPinned.TabIndex = 22;
+            this.CheckBoxPinned.Text = "CheckBoxPinned";
+            this.CheckBoxPinned.UseVisualStyleBackColor = true;
+            this.CheckBoxPinned.Visible = false;
+            // 
             // Add
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1249, 860);
+            this.Controls.Add(this.CheckBoxPinned);
             this.Controls.Add(this.PanelCycleProfile);
             this.Controls.Add(this.PanelDeleteFiles);
             this.Controls.Add(this.KeyComboGroupBox);
@@ -655,6 +668,7 @@
             this.PanelCycleProfile.ResumeLayout(false);
             this.PanelCycleProfile.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -708,5 +722,6 @@
         private System.Windows.Forms.RadioButton RadioCycleBackward;
         private System.Windows.Forms.RadioButton RadioCycleForward;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.CheckBox CheckBoxPinned;
     }
 }

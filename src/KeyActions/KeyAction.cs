@@ -135,6 +135,7 @@ namespace BindKey.KeyActions
             }
             this.Keys = options.Keys;
             this.Enabled = options.Enabled;
+            this.Pinned = options.Pinned;
             SetNextAction(options.NextAction);
         }
 
