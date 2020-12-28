@@ -34,6 +34,7 @@ namespace BindKey.KeyActions
         IKeyAction NextKeyAction { get; }
         void SetNextAction(IKeyAction action);
         void ExecuteActions();
+        void ClearKeyCombo();
     }
 
     internal abstract class DefaultKeyAction : IKeyAction
@@ -89,6 +90,38 @@ namespace BindKey.KeyActions
         public string GUID { get; } = Guid.NewGuid().ToString();
         public string NextKeyActionGUID { get; private set; }
 
+        public DefaultKeyAction(DefaultAddOptions options, string GUID = "")
+        {
+            if (string.IsNullOrWhiteSpace(GUID) == false)
+            {
+                this.GUID = GUID;
+            }
+            this.Keys = options.Keys;
+            this.Enabled = options.Enabled;
+            this.Pinned = options.Pinned;
+            SetNextAction(options.NextAction);
+        }
+
+        public DefaultKeyAction(Dictionary<string, string> propertyMap)
+        {
+            try
+            {
+                this.GUID = propertyMap[nameof(GUID)];
+                this.NextKeyActionGUID = propertyMap[nameof(NextKeyActionGUID)];
+                this.Enabled = bool.Parse(propertyMap[nameof(Enabled)]);
+                this.Pinned = bool.Parse(propertyMap[nameof(Pinned)]);
+
+                var keys = propertyMap[nameof(Keys)].Split(',');
+                this.Keys[0] = (Keys)Enum.Parse(typeof(Keys), keys[0], true);
+                this.Keys[1] = (Keys)Enum.Parse(typeof(Keys), keys[1], true);
+                this.Keys[2] = (Keys)Enum.Parse(typeof(Keys), keys[2], true);
+            }
+            catch
+            {
+                MessageBox.Show("Error", "Failed to create key action. Corrupted save file or bad input.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         public static string GetKeyCombo(Keys[] keys, bool pretty)
         {
             string res = string.Empty;
@@ -127,36 +160,9 @@ namespace BindKey.KeyActions
             }
         }
 
-        public DefaultKeyAction(DefaultAddOptions options, string GUID = "")
+        public void ClearKeyCombo()
         {
-            if (string.IsNullOrWhiteSpace(GUID) == false)
-            {
-                this.GUID = GUID;
-            }
-            this.Keys = options.Keys;
-            this.Enabled = options.Enabled;
-            this.Pinned = options.Pinned;
-            SetNextAction(options.NextAction);
-        }
-
-        public DefaultKeyAction(Dictionary<string, string> propertyMap)
-        {
-            try
-            {
-                this.GUID = propertyMap[nameof(GUID)];
-                this.NextKeyActionGUID = propertyMap[nameof(NextKeyActionGUID)];
-                this.Enabled = bool.Parse(propertyMap[nameof(Enabled)]);
-                this.Pinned = bool.Parse(propertyMap[nameof(Pinned)]);
-
-                var keys = propertyMap[nameof(Keys)].Split(',');
-                this.Keys[0] = (Keys)Enum.Parse(typeof(Keys), keys[0], true);
-                this.Keys[1] = (Keys)Enum.Parse(typeof(Keys), keys[1], true);
-                this.Keys[2] = (Keys)Enum.Parse(typeof(Keys), keys[2], true);
-            }
-            catch
-            {
-                MessageBox.Show("Error", "Failed to create key action. Corrupted save file or bad input.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            this.Keys = new Keys[KEY_COUNT];
         }
     }
 }

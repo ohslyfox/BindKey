@@ -25,19 +25,26 @@ namespace BindKey.Util
             }
         }
         public List<IKeyAction> SelectedActionList { get => SelectedActionMap?.Values.ToList(); }
-        public List<IKeyAction> PinnedActions { get => ProfileMap.Values.SelectMany(d => d.Values)
-                                                                        .Where(ka => ka.Pinned)
-                                                                        .GroupBy(ka => ka.GUID)
-                                                                        .Select(grp => grp.FirstOrDefault()).ToList(); }
+        public List<IKeyAction> PinnedActions
+        {
+            get => ProfileMap.Values.SelectMany(d => d.Values)
+                                    .Where(ka => ka.Pinned)
+                                    .GroupBy(ka => ka.GUID)
+                                    .Select(grp => grp.FirstOrDefault()).ToList();
+        }
         public IEnumerable<string> ProfileNames { get => ProfileMap.Keys; }
-        public IEnumerable<IKeyAction> ActionsToHook { get => SelectedActionMap?.Select(kvp => kvp.Value)
-                                                                                .Where(ka => ka.Enabled && string.IsNullOrWhiteSpace(ka.KeyCombo) == false); }
+        public IEnumerable<IKeyAction> ActionsToHook
+        {
+            get => SelectedActionMap?.Select(kvp => kvp.Value)
+                                     .Where(ka => ka.Enabled && string.IsNullOrWhiteSpace(ka.KeyCombo) == false);
+        }
 
         public KeyActionData(string filePath)
         {
             this._filePath = filePath;
             this.ProfileMap = new Dictionary<string, Dictionary<string, IKeyAction>>();
             this.LoadData();
+            this.RefreshNextKeyActions();
         }
 
         public void RefreshNextKeyActions()
@@ -103,6 +110,16 @@ namespace BindKey.Util
             }
             else
             {
+                // clear any matching key combos
+                var keyActionsToClear = this.ProfileMap.Where(kvp => kvp.Key != SelectedProfile)
+                                                       .SelectMany(kvp => kvp.Value)
+                                                       .Select(kvp => kvp.Value)
+                                                       .Where(ka => ka.KeyCombo == keyAction.KeyCombo);
+                foreach (IKeyAction action in keyActionsToClear)
+                {
+                    action.ClearKeyCombo();
+                }
+
                 foreach (var kvp in this.ProfileMap)
                 {
                     if (kvp.Value.ContainsKey(keyAction.GUID) == false)
