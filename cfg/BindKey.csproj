@@ -83,7 +83,6 @@
     </Compile>
     <Compile Include="AddOptions\AddOptions.cs" />
     <Compile Include="AddOptions\AddOptionsFactory.cs" />
-    <Compile Include="AddOptions\AddOptionsUtil.cs" />
     <Compile Include="AddOptions\CycleProfileOptions.cs" />
     <Compile Include="AddOptions\DeleteFilesOptions.cs" />
     <Compile Include="AddOptions\KillProcessOptions.cs" />
@@ -102,6 +101,7 @@
     <Compile Include="KeyActions\KillProcessAction.cs" />
     <Compile Include="KeyActions\OpenProcessAction.cs" />
     <Compile Include="KeyActions\ScreenCaptureAction.cs" />
+    <Compile Include="Util\HookManager.cs" />
     <Compile Include="Util\PrettyKeys.cs" />
     <Compile Include="Profile.cs">
       <SubType>Form</SubType>

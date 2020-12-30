@@ -1,4 +1,5 @@
 ﻿using BindKey.KeyActions;
+using System;
 using System.Windows.Forms;
 
 namespace BindKey.AddOptions
@@ -14,10 +15,11 @@ namespace BindKey.AddOptions
             : base(addForm)
         { }
 
-        public void FillForm(KillProcessAction action)
+        public override void FillForm(IKeyAction action)
         {
-            base.FillForm(action);
-            SetControl<TextBox>(CONTROL_PROCESSNAME, action.ProcessName);
+            var convertedAction = action as KillProcessAction ?? throw new ArgumentException();
+            base.FillForm(convertedAction);
+            SetControl<TextBox>(CONTROL_PROCESSNAME, convertedAction.ProcessName);
         }
 
         public override bool Validate()

@@ -56,10 +56,10 @@ namespace BindKey.AddOptions
                 return false;
             }
             if (this.Enabled &&
-                AddForm.KeyActions.Any(ka => ka.Enabled &&
-                                       ka.Equals(AddForm.LocalAction) == false &&
-                                       string.IsNullOrWhiteSpace(ka.KeyCombo) == false &&
-                                       ka.KeyCombo == DefaultKeyAction.GetKeyCombo(Keys, false)))
+                AddForm.Data.SelectedActionList.Any(ka => ka.Enabled &&
+                                                    ka.Equals(AddForm.LocalAction) == false &&
+                                                    string.IsNullOrWhiteSpace(ka.KeyCombo) == false &&
+                                                    ka.KeyCombo == DefaultKeyAction.GetKeyCombo(Keys, false)))
             {
                 MessageBox.Show("Error: an event is already bound to the key combo " + DefaultKeyAction.GetKeyCombo(Keys, true) + ".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
@@ -67,7 +67,7 @@ namespace BindKey.AddOptions
             return true;
         }
 
-        public void FillForm(IKeyAction action)
+        public virtual void FillForm(IKeyAction action)
         {
             var keys = action.Keys.Clone() as Keys[];
             this.AddForm.Keys[0] = keys[0];

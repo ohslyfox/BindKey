@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace BindKey.KeyActions
 {
-    public enum ActionTypes
+    internal enum ActionTypes
     {
         None = 0,
         OpenProcess = 1,
@@ -18,7 +18,7 @@ namespace BindKey.KeyActions
         CycleProfile = 5
     }
 
-    public delegate void KeyAction();
+    internal delegate void KeyAction();
 
     internal interface IKeyAction
     {
@@ -41,7 +41,7 @@ namespace BindKey.KeyActions
     {
         public const string DELIMITER = "|||||";
         public const int KEY_COUNT = 3;
-        public static Regex REGEX_DELIMITER = new Regex("\\|\\|\\|\\|\\|");
+        public static readonly Regex REGEX_DELIMITER = new Regex("\\|\\|\\|\\|\\|");
 
         private Dictionary<string, string> _itemsToSave = null;
         protected virtual Dictionary<string, string> ItemsToSave
@@ -66,6 +66,7 @@ namespace BindKey.KeyActions
         
         public abstract ActionTypes Type { get; }
         protected abstract void KeyActionProcess();
+        public override abstract string ToString();
         protected string NextString { get => $"{(this.NextKeyAction != null ? $" -> {this.NextKeyAction}" : string.Empty)}"; }
 
         private KeyAction _action = null;
@@ -84,13 +85,20 @@ namespace BindKey.KeyActions
         public IKeyAction NextKeyAction { get; private set; }
         public bool Enabled { get; private set; }
         public bool Pinned { get; set; }
-        public Keys[] Keys { get; private set; } = new Keys[KEY_COUNT];
+        public Keys[] Keys { get; private set; }
         public string SaveString { get => string.Join(DELIMITER, ItemsToSave.Select(kvp => $"{kvp.Key},{kvp.Value}")); }
         public string KeyCombo { get => GetKeyCombo(this.Keys, false); }
-        public string GUID { get; } = Guid.NewGuid().ToString();
+        public string GUID { get; }
         public string NextKeyActionGUID { get; private set; }
 
+        private DefaultKeyAction()
+        {
+            this.GUID = Guid.NewGuid().ToString();
+            ClearKeyCombo();
+        }
+
         public DefaultKeyAction(DefaultAddOptions options, string GUID = "")
+            : this()
         {
             if (string.IsNullOrWhiteSpace(GUID) == false)
             {
@@ -103,6 +111,7 @@ namespace BindKey.KeyActions
         }
 
         public DefaultKeyAction(Dictionary<string, string> propertyMap)
+            : this()
         {
             try
             {

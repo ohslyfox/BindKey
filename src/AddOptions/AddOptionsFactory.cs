@@ -5,9 +5,9 @@ namespace BindKey.AddOptions
 {
     internal static class AddOptionsFactory
     {
-        public static IAddOptions GetAddOptionsOfType(ActionTypes type, Add addForm)
+        public static IAddOptions GetAddOptionsFromActionType(ActionTypes type, Add addForm)
         {
-            IAddOptions? res = null;
+            IAddOptions res = null;
 
             switch (type)
             {

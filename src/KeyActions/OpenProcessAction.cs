@@ -58,7 +58,7 @@ namespace BindKey.KeyActions
             }
             catch
             {
-                BindKey.GetInstance().ShowBalloonTip("Error", $"BindKey was unable to start process \"{this.FilePath}\"");
+                BindKey.GetInstance().ShowBalloonTip("Error", $"BindKey was unable to start process \"{this.FilePath}\"", ToolTipIcon.Error);
             }
         }
 

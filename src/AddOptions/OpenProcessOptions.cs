@@ -1,4 +1,5 @@
 ﻿using BindKey.KeyActions;
+using System;
 using System.Windows.Forms;
 
 namespace BindKey.AddOptions
@@ -16,11 +17,12 @@ namespace BindKey.AddOptions
             : base(addForm)
         { }
 
-        public void FillForm(OpenProcessAction action)
+        public override void FillForm(IKeyAction action)
         {
-            base.FillForm(action);
-            SetControl<TextBox>(CONTROL_FILEPATH, action.FilePath);
-            SetControl<CheckBox>(CONTROL_ASADMIN, action.AsAdmin);
+            var convertedAction = action as OpenProcessAction ?? throw new ArgumentException();
+            base.FillForm(convertedAction);
+            SetControl<TextBox>(CONTROL_FILEPATH, convertedAction.FilePath);
+            SetControl<CheckBox>(CONTROL_ASADMIN, convertedAction.AsAdmin);
         }
 
         public override bool Validate()

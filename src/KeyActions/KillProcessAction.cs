@@ -56,7 +56,7 @@ namespace BindKey.KeyActions
             }
             catch
             {
-                BindKey.GetInstance().ShowBalloonTip("Error", "Could not kill or start process.");
+                BindKey.GetInstance().ShowBalloonTip("Error", "Could not kill or start process.", ToolTipIcon.Error);
             }
         }
 

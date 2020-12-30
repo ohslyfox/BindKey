@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using BindKey.KeyActions;
 
 namespace BindKey.AddOptions
@@ -24,15 +25,16 @@ namespace BindKey.AddOptions
             : base(addForm)
         { }
 
-        public void FillForm(DeleteFilesAction action)
+        public override void FillForm(IKeyAction action)
         {
-            base.FillForm(action);
-            SetControl<TextBox>(CONTROL_DAYS, action.Days);
-            SetControl<TextBox>(CONTROL_HOURS, action.Hours);
-            SetControl<TextBox>(CONTROL_MINUTES, action.Minutes);
-            SetControl<TextBox>(CONTROL_SECONDS, action.Seconds);
-            SetControl<TextBox>(CONTROL_SEARCHPATTERN, action.SearchPattern);
-            SetControl<TextBox>(CONTROL_FOLDERPATH, action.FolderPath);
+            var convertedAction = action as DeleteFilesAction ?? throw new ArgumentException();
+            base.FillForm(convertedAction);
+            SetControl<TextBox>(CONTROL_DAYS, convertedAction.Days);
+            SetControl<TextBox>(CONTROL_HOURS, convertedAction.Hours);
+            SetControl<TextBox>(CONTROL_MINUTES, convertedAction.Minutes);
+            SetControl<TextBox>(CONTROL_SECONDS, convertedAction.Seconds);
+            SetControl<TextBox>(CONTROL_SEARCHPATTERN, convertedAction.SearchPattern);
+            SetControl<TextBox>(CONTROL_FOLDERPATH, convertedAction.FolderPath);
         }
 
         public override bool Validate()

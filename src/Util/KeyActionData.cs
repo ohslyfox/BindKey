@@ -55,7 +55,13 @@ namespace BindKey.Util
                 {
                     if (keyAction.NextKeyActionGUID != null)
                     {
-                        dict.TryGetValue(keyAction.NextKeyActionGUID, out var nextAction);
+                        if (dict.TryGetValue(keyAction.NextKeyActionGUID, out var nextAction))
+                        {
+                            if (keyAction.Pinned && !nextAction.Pinned)
+                            {
+                                nextAction = null;
+                            }
+                        }
                         keyAction.SetNextAction(nextAction);
                     }
                 }
@@ -129,6 +135,7 @@ namespace BindKey.Util
                 }
             }
             keyAction.Pinned = !keyAction.Pinned;
+            RefreshNextKeyActions();
         }
 
         private void LoadData()
@@ -160,7 +167,7 @@ namespace BindKey.Util
                                             .ToDictionary(k => k[0], v => string.Join(",", v.GetRange(1, v.Count - 1)));
                         if (propDict.Count > 0)
                         {
-                            IKeyAction action = KeyActionFactory.GetNewKeyActionOfType(propDict);
+                            IKeyAction action = KeyActionFactory.GetKeyActionFromPropertyMap(propDict);
                             if (action != null)
                             {
                                 currentActionMap[action.GUID] = action;

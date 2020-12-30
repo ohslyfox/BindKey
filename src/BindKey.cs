@@ -11,11 +11,10 @@ namespace BindKey
 {
     public partial class BindKey : Form
     {
-        private IKeyboardMouseEvents m_GlobalHook = Hook.GlobalEvents();
         private KeyActionData Data { get; set; }
         private Add AddForm { get; set; }
         private Profile ProfileForm { get; set; }
-        private bool GlobalDisable { get; set; } = false;
+        private bool GlobalDisable { get; set; }
 
         private static BindKey SingletonInstance = null;
         public static BindKey GetInstance()
@@ -30,6 +29,7 @@ namespace BindKey
         public BindKey(string filePath)
         {
             InitializeComponent();
+            this.GlobalDisable = false;
             this.Data = new KeyActionData(filePath);
             this.RefreshListAndKeyHooks();
             this.RefreshProfileList();
@@ -37,9 +37,9 @@ namespace BindKey
             SingletonInstance = this;
         }
 
-        public void ShowBalloonTip(string title, string message)
+        public void ShowBalloonTip(string title, string message, ToolTipIcon icon)
         {
-            notifyIcon1.ShowBalloonTip(1250, title, message, ToolTipIcon.Info);
+            notifyIcon1.ShowBalloonTip(1250, title, message, icon);
         }
 
         private void RefreshListAndKeyHooks()
@@ -68,7 +68,7 @@ namespace BindKey
 
         private IKeyAction ResolveSelectedKeyAction()
         {
-            IKeyAction? res = null;
+            IKeyAction res = null;
             try
             {
                 if (listView1.SelectedItems.Count > 0)
@@ -115,7 +115,7 @@ namespace BindKey
             if (GlobalDisable) return;
             try
             {
-                RecreateKeyboardHook();
+                HookManager.CleanHook();
 
                 var actionsToHook = Data.ActionsToHook;
                 if (actionsToHook != null)
@@ -128,19 +128,13 @@ namespace BindKey
                         Action action = keyAction.ExecuteActions;
                         combos[combination] = action;
                     }
-                    m_GlobalHook.OnCombination(combos);
+                    HookManager.SetCombinationHook(combos);
                 }
             }
             catch
             {
-                RecreateKeyboardHook();
+                HookManager.CleanHook();
             }
-        }
-
-        private void RecreateKeyboardHook()
-        {
-            m_GlobalHook.Dispose();
-            m_GlobalHook = Hook.GlobalEvents();
         }
 
         private void DrawListView()
@@ -184,11 +178,11 @@ namespace BindKey
 
         private void AddFormClosed(object sender, FormClosedEventArgs e)
         {
-            this.BringToFront();
-            this.EnableDisableControls(true);
-            this.Data.RefreshNextKeyActions();
-            this.RefreshListAndKeyHooks();
-            this.AddForm = null;
+            BringToFront();
+            EnableDisableControls(true);
+            Data.RefreshNextKeyActions();
+            RefreshListAndKeyHooks();
+            AddForm = null;
         }
 
         private void CreateAddForm(IKeyAction selectedAction)
@@ -196,7 +190,7 @@ namespace BindKey
             if (AddForm == null && ProfileForm == null)
             {
                 EnableDisableControls(false);
-                RecreateKeyboardHook();
+                HookManager.CleanHook();
                 AddForm = new Add(Data, selectedAction);
                 AddForm.StartPosition = FormStartPosition.Manual;
                 AddForm.Location = new Point((this.Location.X + this.Width / 2) - Add.DIMENSIONS_DEFAULT.X / 2, (this.Location.Y + this.Height / 2));
@@ -207,9 +201,9 @@ namespace BindKey
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Data.SaveData();
-            this.Close();
-            this.Dispose();
+            Data.SaveData();
+            Close();
+            Dispose();
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -224,7 +218,7 @@ namespace BindKey
             if (disableAllToolStripMenuItem.Text == "Disable All")
             {
                 GlobalDisable = true;
-                RecreateKeyboardHook();
+                HookManager.CleanHook();
                 disableAllToolStripMenuItem.Text = "Enable All";
             }
             else
@@ -237,7 +231,7 @@ namespace BindKey
 
         private void ProfileAdd_Click(object sender, EventArgs e)
         {
-            RecreateKeyboardHook();
+            HookManager.CleanHook();
             CreateProfileForm();
         }
 

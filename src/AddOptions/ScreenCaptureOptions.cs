@@ -1,4 +1,5 @@
 ﻿using BindKey.KeyActions;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -17,12 +18,13 @@ namespace BindKey.AddOptions
             : base(addForm)
         { }
 
-        public void FillForm(ScreenCaptureAction action)
+        public override void FillForm(IKeyAction action)
         {
-            base.FillForm(action);
-            AddForm.SelectedRegion = action.ScreenRegion;
-            SetControl<PictureBox>(CONTROL_PICTUREBOX, Add.GetBitMapFromRegion(action.ScreenRegion));
-            SetControl<TextBox>(CONTROL_FOLDERPATH, action.FolderPath);
+            var convertedAction = action as ScreenCaptureAction ?? throw new ArgumentException();
+            base.FillForm(convertedAction);
+            AddForm.SelectedRegion = convertedAction.ScreenRegion;
+            SetControl<PictureBox>(CONTROL_PICTUREBOX, Add.GetBitMapFromRegion(convertedAction.ScreenRegion));
+            SetControl<TextBox>(CONTROL_FOLDERPATH, convertedAction.FolderPath);
         }
 
         public override bool Validate()

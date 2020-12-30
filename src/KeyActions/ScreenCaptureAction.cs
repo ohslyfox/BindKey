@@ -94,7 +94,7 @@ namespace BindKey.KeyActions
             }
             catch
             {
-                BindKey.GetInstance().ShowBalloonTip("Error", "Could not capture screen region, check folder path.");
+                BindKey.GetInstance().ShowBalloonTip("Error", "Could not capture screen region, check folder path.", ToolTipIcon.Error);
             }
         }
 

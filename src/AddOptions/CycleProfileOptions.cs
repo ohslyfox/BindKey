@@ -1,4 +1,5 @@
 ﻿using BindKey.KeyActions;
+using System;
 using System.Windows.Forms;
 
 namespace BindKey.AddOptions
@@ -16,11 +17,12 @@ namespace BindKey.AddOptions
             : base(addForm)
         { }
 
-        public void FillForm(CycleProfileAction action)
+        public override void FillForm(IKeyAction action)
         {
-            base.FillForm(action);
-            SetControl<RadioButton>(CONTROL_FORWARD, action.IsForward);
-            SetControl<RadioButton>(CONTROL_BACKWARD, action.IsForward == false);
+            var convertedAction = action as CycleProfileAction ?? throw new ArgumentException();
+            base.FillForm(convertedAction);
+            SetControl<RadioButton>(CONTROL_FORWARD, convertedAction.IsForward);
+            SetControl<RadioButton>(CONTROL_BACKWARD, convertedAction.IsForward == false);
         }
 
         public override bool Validate()

@@ -6,9 +6,9 @@ namespace BindKey.KeyActions
 {
     internal static class KeyActionFactory
     {
-        public static IKeyAction GetNewKeyActionOfType(ActionTypes type, IAddOptions options, string GUID = "")
+        public static IKeyAction GetKeyActionFromActionType(ActionTypes type, IAddOptions options, string GUID = "")
         {
-            IKeyAction? res = null;
+            IKeyAction res = null;
 
             switch (type)
             {
@@ -33,9 +33,9 @@ namespace BindKey.KeyActions
             return res;
         }
 
-        public static IKeyAction GetNewKeyActionOfType(Dictionary<string, string> propertyMap)
+        public static IKeyAction GetKeyActionFromPropertyMap(Dictionary<string, string> propertyMap)
         {
-            IKeyAction? res = null;
+            IKeyAction res = null;
             ActionTypes type = (ActionTypes)Enum.Parse(typeof(ActionTypes), propertyMap["Type"], true);
 
             switch (type)

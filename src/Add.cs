@@ -88,34 +88,37 @@ namespace BindKey
         public static readonly Point LOCATION_PANELS = new Point(DEFAULT_PANEL_X, DEFAULT_BOTTOM_OF_FORM);
         #endregion
 
-        private KeyActionData Data { get; }
+        public KeyActionData Data { get; }
         private PickKeyCombo KeyPicker { get; set; }
         private ScreenGrabber Grabber { get; set; }
         private string LocalActionGUID { get => LocalAction == null ? string.Empty : LocalAction.GUID; }
-        private List<IKeyAction> AvailableNextActions { get; }
-        public List<IKeyAction> KeyActions { get; }
         public IKeyAction LocalAction { get; private set; }
-        public Keys[] Keys { get; private set; } = new Keys[3];
-        public Rectangle? SelectedRegion { get => Grabber?.CalculateRegion(); set => Grabber = new ScreenGrabber(this, value); }
+        public Keys[] Keys { get => KeyPicker.Keys; }
+        public Rectangle? SelectedRegion { get => Grabber.CalculateRegion(); set => Grabber.Region = value; }
         public IKeyAction NextAction { get => NextActionCombo.SelectedItem as IKeyAction; }
 
         public Add(KeyActionData data, IKeyAction selectedAction)
         {
             this.Data = data;
-            this.KeyActions = data.SelectedActionList;
             this.LocalAction = selectedAction;
-            this.AvailableNextActions = selectedAction == null ? this.KeyActions : this.KeyActions.Where(ka => KeyActionMeetsDisplayCriteria(ka)).ToList();
+            this.KeyPicker = new PickKeyCombo(this);
+            this.Grabber = new ScreenGrabber(this);
+            var availableNextActions = selectedAction == null ? 
+                                       Data.SelectedActionList.Where(ka => !ka.Pinned) : 
+                                       Data.SelectedActionList.Where(ka => KeyActionMeetsDisplayCriteria(ka, selectedAction));
 
             InitializeComponent();
             SetDefaultDimensionsAndLocations();
-            PopulateNextActions();
-            PopulateSelectedAction(selectedAction);
+            PopulateNextActions(availableNextActions);
+            PopulateSelectedAction(selectedAction, availableNextActions);
             RefreshProcessListView();
         }
 
-        private bool KeyActionMeetsDisplayCriteria(IKeyAction ka)
+        private bool KeyActionMeetsDisplayCriteria(IKeyAction ka, IKeyAction selectedAction)
         {
             var temp = ka;
+
+            if (selectedAction.Pinned && !ka.Pinned) return false;
             while (temp != null)
             {
                 if (temp.GUID == LocalActionGUID || temp.NextKeyActionGUID == LocalActionGUID)
@@ -128,10 +131,10 @@ namespace BindKey
             return true;
         }
 
-        private void PopulateNextActions()
+        private void PopulateNextActions(IEnumerable<IKeyAction> availableNextActions)
         {
             NextActionCombo.Items.Add(string.Empty);
-            foreach (var action in AvailableNextActions)
+            foreach (var action in availableNextActions)
             {
                 NextActionCombo.Items.Add(action);
             }
@@ -154,13 +157,14 @@ namespace BindKey
             this.ActionGroupBox.Height = ACTION_GROUPBOX_HEIGHT;
         }
 
-        private void PopulateSelectedAction(IKeyAction selectedAction)
+        private void PopulateSelectedAction(IKeyAction selectedAction, IEnumerable<IKeyAction> availableNextActions)
         {
             if (selectedAction != null)
             {
                 LocalAction = selectedAction;
-                NextActionCombo.SelectedItem = AvailableNextActions.FirstOrDefault(ka => ka.GUID == selectedAction.NextKeyActionGUID);
-                AddOptionsUtil.FillFormFromAction(selectedAction, this);
+                NextActionCombo.SelectedItem = availableNextActions.FirstOrDefault(ka => ka.GUID == selectedAction.NextKeyActionGUID);
+                IAddOptions addOptions = AddOptionsFactory.GetAddOptionsFromActionType(selectedAction.Type, this);
+                addOptions.FillForm(selectedAction);
             }
             DrawKeyDisplay();
         }
@@ -200,16 +204,16 @@ namespace BindKey
             return (ActionTypes)Enum.Parse(typeof(ActionTypes), ActionGroupBox.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Name, true);
         }
 
-        private void DrawKeyDisplay()
+        public void DrawKeyDisplay()
         {
             TextBoxKeyCombo.Text = DefaultKeyAction.GetKeyCombo(this.Keys, true);
         }
 
         private void KeyComboTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (KeyPicker == null && e.KeyCode == System.Windows.Forms.Keys.Back)
+            if (button6.Enabled && e.KeyCode == System.Windows.Forms.Keys.Back)
             {
-                this.Keys = new Keys[DefaultKeyAction.KEY_COUNT];
+                this.KeyPicker.Keys = new Keys[DefaultKeyAction.KEY_COUNT];
                 DrawKeyDisplay();
             }
         }
@@ -217,10 +221,10 @@ namespace BindKey
         private void ButtonSave_Click(object sender, EventArgs e)
         {
             ActionTypes type = ResolveSelectedAction();
-            IAddOptions addOptions = AddOptionsFactory.GetAddOptionsOfType(type, this);
-            if (AddOptionsUtil.ValidateFormFromType(type, addOptions))
+            IAddOptions addOptions = AddOptionsFactory.GetAddOptionsFromActionType(type, this);
+            if (addOptions.Validate())
             {
-                IKeyAction newAction = KeyActionFactory.GetNewKeyActionOfType(type, addOptions, LocalActionGUID);
+                IKeyAction newAction = KeyActionFactory.GetKeyActionFromActionType(type, addOptions, LocalActionGUID);
 
                 if (LocalAction == null)
                 {
@@ -273,12 +277,11 @@ namespace BindKey
 
         private void button5_Click(object sender, EventArgs e)
         {
-            Grabber = new ScreenGrabber(this, null);
             foreach (Control c in this.Controls)
             {
                 c.Enabled = false;
             }
-            Grabber.SetMouseHook();
+            this.Grabber.StartPicking();
         }
 
         private void ButtonOpenProcessFileDialog_Click(object sender, EventArgs e)
@@ -318,20 +321,18 @@ namespace BindKey
 
         private void button6_Click(object sender, EventArgs e)
         {
-            if (KeyPicker == null)
+            button6.Enabled = false;
+            foreach (Control c in this.Controls)
             {
-                foreach (Control c in this.Controls)
-                {
-                    c.Enabled = false;
-                }
-                KeyComboGroupBox.Enabled = true;
-                button6.Enabled = false;
-                TextBoxKeyCombo.Text = "Press up to three keys...";
-                KeyPicker = new PickKeyCombo(this);
-                this.Focus();
-                TextBoxKeyCombo.Focus();
-                TextBoxKeyCombo.Select(TextBoxKeyCombo.Text.Length, 0);
+                c.Enabled = false;
             }
+
+            KeyComboGroupBox.Enabled = true;
+            TextBoxKeyCombo.Text = "Press up to three keys...";
+            KeyPicker.StartPicking();
+            Focus();
+            TextBoxKeyCombo.Focus();
+            TextBoxKeyCombo.Select(TextBoxKeyCombo.Text.Length, 0);
         }
 
         private void ForceNumericalEvent_KeyPress(object sender, KeyPressEventArgs e)
@@ -389,23 +390,31 @@ namespace BindKey
 
         private class ScreenGrabber
         {
-            private IKeyboardMouseEvents m_GlobalHook = Hook.GlobalEvents();
-            private List<Point> Points = new List<Point>();
-            private Rectangle? Region { get; set; }
-            private Add AddForm { get; set; }
+            private Point?[] Points { get; set; }
+            private Add AddForm { get; }
             private int ClickIndex { get; set; }
-            public ScreenGrabber(Add addForm, Rectangle? region)
+            public Rectangle? Region { private get; set; }
+
+            public ScreenGrabber(Add addForm)
             {
                 ClickIndex = 0;
                 AddForm = addForm;
-                Region = region;
             }
 
-            private void MouseDownHandler(object sender, MouseEventArgs e)
+            public void StartPicking()
             {
-                ClickIndex++;
+                HookManager.CleanHook();
+                Region = null;
+                ClickIndex = 0;
+                Points = new Point?[2];
+                AddForm.button5.Enabled = false;
+                AddForm.button5.Text = "Click first point.";
+                HookManager.SetMouseDown(GlobalMouseDown);
+            }
 
-                Points.Add(new Point(Cursor.Position.X, Cursor.Position.Y));
+            private void GlobalMouseDown(object sender, MouseEventArgs e)
+            {
+                Points[ClickIndex++] = new Point(Cursor.Position.X, Cursor.Position.Y);
 
                 if (ClickIndex == 1)
                 {
@@ -427,23 +436,12 @@ namespace BindKey
                         this.AddForm.pictureBox1.Image = null;
                     }
 
-                    m_GlobalHook.MouseDown -= MouseDownHandler;
-                    m_GlobalHook.Dispose();
-
+                    HookManager.CleanHook();
                     foreach (Control c in this.AddForm.Controls)
                     {
                         c.Enabled = true;
                     }
                 }
-            }
-
-            public void SetMouseHook()
-            {
-                AddForm.button5.Enabled = false;
-                AddForm.button5.Text = "Click first point.";
-                Points = new List<Point>();
-                ClickIndex = 0;
-                m_GlobalHook.MouseDown += MouseDownHandler;
             }
 
             public Rectangle? CalculateRegion()
@@ -452,40 +450,43 @@ namespace BindKey
                 {
                     return (Rectangle)Region;
                 }
-                else if (Points.Count == 2 && Points[0] != Points[1])
+                else if (Points.All(p => p != null) && Points[0] != Points[1])
                 {
                     Rectangle rec = new Rectangle();
-                    if (Points[0].X < Points[1].X &&
-                        Points[0].Y < Points[1].Y)
+                    var firstPoint = Points[0].Value;
+                    var secondPoint = Points[1].Value;
+
+                    if (firstPoint.X < secondPoint.X &&
+                        firstPoint.Y < secondPoint.Y)
                     {
-                        rec.X = Points[0].X;
-                        rec.Y = Points[0].Y;
-                        rec.Width = Points[1].X - Points[0].X;
-                        rec.Height = Points[1].Y - Points[0].Y;
+                        rec.X = firstPoint.X;
+                        rec.Y = firstPoint.Y;
+                        rec.Width = secondPoint.X - firstPoint.X;
+                        rec.Height = secondPoint.Y - firstPoint.Y;
                     }
-                    else if (Points[0].X > Points[1].X &&
-                             Points[0].Y < Points[1].Y)
+                    else if (firstPoint.X > secondPoint.X &&
+                             firstPoint.Y < secondPoint.Y)
                     {
-                        rec.X = Points[1].X;
-                        rec.Y = Points[0].Y;
-                        rec.Width = Points[0].X - Points[1].X;
-                        rec.Height = Points[1].Y - Points[0].Y;
+                        rec.X = secondPoint.X;
+                        rec.Y = firstPoint.Y;
+                        rec.Width = firstPoint.X - secondPoint.X;
+                        rec.Height = secondPoint.Y - firstPoint.Y;
                     }
-                    else if (Points[0].X < Points[1].X &&
-                             Points[0].Y > Points[1].Y)
+                    else if (firstPoint.X < secondPoint.X &&
+                             firstPoint.Y > secondPoint.Y)
                     {
-                        rec.X = Points[0].X;
-                        rec.Y = Points[1].Y;
-                        rec.Width = Points[1].X - Points[0].X;
-                        rec.Height = Points[0].Y - Points[1].Y;
+                        rec.X = firstPoint.X;
+                        rec.Y = secondPoint.Y;
+                        rec.Width = secondPoint.X - firstPoint.X;
+                        rec.Height = firstPoint.Y - secondPoint.Y;
                     }
-                    else if (Points[0].X > Points[1].X &&
-                             Points[0].Y > Points[1].Y)
+                    else if (firstPoint.X > secondPoint.X &&
+                             firstPoint.Y > secondPoint.Y)
                     {
-                        rec.X = Points[1].X;
-                        rec.Y = Points[1].Y;
-                        rec.Width = Points[0].X - Points[1].X;
-                        rec.Height = Points[0].Y - Points[1].Y;
+                        rec.X = secondPoint.X;
+                        rec.Y = secondPoint.Y;
+                        rec.Width = firstPoint.X - secondPoint.X;
+                        rec.Height = firstPoint.Y - secondPoint.Y;
                     }
                     return rec;
                 }
@@ -496,16 +497,21 @@ namespace BindKey
 
         private class PickKeyCombo
         {
-            private IKeyboardMouseEvents m_GlobalHook = Hook.GlobalEvents();
-            private Keys[] Keys { get; set; }
             private Add AddForm { get; set; }
+            public Keys[] Keys { get; set; }
 
             public PickKeyCombo(Add addForm)
             {
                 this.AddForm = addForm;
+                this.Keys = new Keys[DefaultKeyAction.KEY_COUNT];
+            }
+
+            public void StartPicking()
+            {
                 Keys = new Keys[DefaultKeyAction.KEY_COUNT];
-                m_GlobalHook.KeyDown += GlobalKeyDown;
-                m_GlobalHook.KeyUp += GlobalKeyUp;
+                HookManager.CleanHook();
+                HookManager.SetKeyDown(GlobalKeyDown);
+                HookManager.SetKeyUp(GlobalKeyUp);
             }
 
             private void GlobalKeyDown(object sender, KeyEventArgs e)
@@ -524,14 +530,11 @@ namespace BindKey
                         }
                     }
                 }
-                AddForm.TextBoxKeyCombo.Text = DefaultKeyAction.GetKeyCombo(Keys, true);
+                AddForm.DrawKeyDisplay();
             }
 
             private void GlobalKeyUp(object sender, KeyEventArgs e)
             {
-                // set keys
-                AddForm.Keys = Keys;
-
                 // update form
                 foreach (Control c in AddForm.Controls)
                 {
@@ -540,20 +543,9 @@ namespace BindKey
                 AddForm.button6.Enabled = true;
                 AddForm.DrawKeyDisplay();
                 AddForm.TextBoxKeyCombo.Select(AddForm.TextBoxKeyCombo.Text.Length, 0);
-                AddForm.KeyPicker = null;
 
                 // remove hook
-                CleanGlobalHook();
-            }
-
-            private void CleanGlobalHook()
-            {
-                if (m_GlobalHook != null)
-                {
-                    m_GlobalHook.KeyDown -= GlobalKeyDown;
-                    m_GlobalHook.KeyUp -= GlobalKeyUp;
-                    m_GlobalHook.Dispose();
-                }
+                HookManager.CleanHook();
             }
         }
     }
