@@ -11,7 +11,7 @@ namespace BindKey
 {
     public partial class BindKey : Form
     {
-        private KeyActionData Data { get; set; }
+        private KeyActionData Data { get; }
         private Add AddForm { get; set; }
         private Profile ProfileForm { get; set; }
         private bool GlobalDisable { get; set; }
@@ -320,6 +320,7 @@ namespace BindKey
                     if (selectedKeyAction != null)
                     {
                         pinToolStripMenuItem.Text = selectedKeyAction.Pinned ? "Unpin" : "Pin";
+                        disableToolStripMenuItem.Text = selectedKeyAction.Enabled ? "Disable" : "Enable";
                         ListItemMenuStrip.Show(new Point(Cursor.Position.X - 12, Cursor.Position.Y - 4));
                     }
                 }
@@ -356,6 +357,19 @@ namespace BindKey
                 {
                     Data.PinUnpinKeyAction(selectedKeyAction);
                     DrawListView();
+                }
+            }
+        }
+
+        private void disableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (AddForm == null && ProfileForm == null)
+            {
+                var selectedKeyAction = ResolveSelectedKeyAction();
+                if (selectedKeyAction != null)
+                {
+                    Data.EnableDisableKeyAction(selectedKeyAction);
+                    RefreshListAndKeyHooks();
                 }
             }
         }

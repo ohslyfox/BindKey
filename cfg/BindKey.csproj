@@ -94,6 +94,7 @@
     <Compile Include="BindKey.Designer.cs">
       <DependentUpon>BindKey.cs</DependentUpon>
     </Compile>
+    <Compile Include="KeyActions\ActionTypes.cs" />
     <Compile Include="KeyActions\CycleProfileAction.cs" />
     <Compile Include="KeyActions\DeleteFilesAction.cs" />
     <Compile Include="KeyActions\KeyAction.cs" />

@@ -1,7 +1,6 @@
 ﻿using BindKey.AddOptions;
 using BindKey.KeyActions;
 using BindKey.Util;
-using Gma.System.MouseKeyHook;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,7 +14,7 @@ namespace BindKey
 {
     internal partial class Add : Form
     {
-        #region dimension constants
+        #region constants
         public const int DEFAULT_BUTTON_X = 11;
         public const int DEFAULT_PANEL_X = 12;
         public const int DEFAULT_PANEL_WIDTH = 248;
@@ -30,61 +29,85 @@ namespace BindKey
         public const int TOP_OF_FORM_MARGIN = 3;
         public const int BOTTOM_OF_FORM_MARGIN = 10;
         public const int KEY_COMBO_GROUPBOX_HEIGHT = 75;
-        public const int ACTION_GROUPBOX_HEIGHT = 174;
+        public const int ACTION_GROUPBOX_HEIGHT = 85;
         public const int OPEN_PROCESS_PANEL_HEIGHT = 80;
         public const int SCREENSHOT_PROCESS_PANEL_HEIGHT = 190;
         public const int KILL_PROCESS_PANEL_HEIGHT = 190;
         public const int DELETE_FILES_PANEL_HEIGHT = 180;
         public const int CYCLE_PROFILE_PANEL_HEIGHT = 62;
         public const int SAVE_BUTTON_HEIGHT = 23;
+
         public static readonly Dictionary<ActionTypes, int> HEIGHT_DICT = new Dictionary<ActionTypes, int>
         {
+            { ActionTypes.None, 0 },
             { ActionTypes.OpenProcess, OPEN_PROCESS_PANEL_HEIGHT },
             { ActionTypes.ScreenCapture, SCREENSHOT_PROCESS_PANEL_HEIGHT },
             { ActionTypes.KillProcess, KILL_PROCESS_PANEL_HEIGHT },
             { ActionTypes.DeleteFiles, DELETE_FILES_PANEL_HEIGHT },
             { ActionTypes.CycleProfile, CYCLE_PROFILE_PANEL_HEIGHT }
         };
-        #endregion
 
-        #region dimension point constants
         public static readonly Point DIMENSIONS_DEFAULT = new Point(DEFAULT_FORM_WIDTH, HEADER_HEIGHT +
                                                                                         DEFAULT_BOTTOM_OF_FORM);
+
         public static readonly Point DIMENSIONS_OPENPROCESS = new Point(DEFAULT_FORM_WIDTH, DIMENSIONS_DEFAULT.Y +
                                                                                         OPEN_PROCESS_PANEL_HEIGHT + CONTROL_MARGIN +
                                                                                         SAVE_BUTTON_HEIGHT +
                                                                                         BOTTOM_OF_FORM_MARGIN);
+
         public static readonly Point DIMENSIONS_SCREENCAPTURE = new Point(DEFAULT_FORM_WIDTH, DIMENSIONS_DEFAULT.Y +
                                                                                               SCREENSHOT_PROCESS_PANEL_HEIGHT +
                                                                                               CONTROL_MARGIN +
                                                                                               SAVE_BUTTON_HEIGHT +
                                                                                               BOTTOM_OF_FORM_MARGIN);
+
         public static readonly Point DIMENSIONS_KILLPROCESS = new Point(DEFAULT_FORM_WIDTH, DIMENSIONS_DEFAULT.Y +
                                                                                             KILL_PROCESS_PANEL_HEIGHT +
                                                                                             CONTROL_MARGIN +
                                                                                             SAVE_BUTTON_HEIGHT +
                                                                                             BOTTOM_OF_FORM_MARGIN);
+
         public static readonly Point DIMENSIONS_DELETEFILES = new Point(DEFAULT_FORM_WIDTH, DIMENSIONS_DEFAULT.Y +
                                                                                             DELETE_FILES_PANEL_HEIGHT +
                                                                                             CONTROL_MARGIN +
                                                                                             SAVE_BUTTON_HEIGHT +
                                                                                             BOTTOM_OF_FORM_MARGIN);
+
         public static readonly Point DIMENSIONS_CYCLE_PROFILE = new Point(DEFAULT_FORM_WIDTH, DIMENSIONS_DEFAULT.Y +
                                                                                               CYCLE_PROFILE_PANEL_HEIGHT +
                                                                                               CONTROL_MARGIN +
                                                                                               SAVE_BUTTON_HEIGHT +
                                                                                               BOTTOM_OF_FORM_MARGIN);
+
         public static readonly Dictionary<ActionTypes, Point> DIMENSIONS_DICT = new Dictionary<ActionTypes, Point>
         {
+            { ActionTypes.None, DIMENSIONS_DEFAULT },
             { ActionTypes.OpenProcess, DIMENSIONS_OPENPROCESS },
             { ActionTypes.ScreenCapture, DIMENSIONS_SCREENCAPTURE},
             { ActionTypes.KillProcess, DIMENSIONS_KILLPROCESS },
             { ActionTypes.DeleteFiles, DIMENSIONS_DELETEFILES },
             { ActionTypes.CycleProfile, DIMENSIONS_CYCLE_PROFILE }
         };
-        #endregion
 
-        #region location point constants
+        public static readonly Dictionary<string, ActionTypes> DESCRIPTION_TO_TYPE_DICT = new Dictionary<string, ActionTypes>
+        {
+            { ActionTypes.None.GetDescription(), ActionTypes.None },
+            { ActionTypes.CycleProfile.GetDescription(), ActionTypes.CycleProfile },
+            { ActionTypes.DeleteFiles.GetDescription(), ActionTypes.DeleteFiles },
+            { ActionTypes.KillProcess.GetDescription(), ActionTypes.KillProcess },
+            { ActionTypes.OpenProcess.GetDescription(), ActionTypes.OpenProcess },
+            { ActionTypes.ScreenCapture.GetDescription(), ActionTypes.ScreenCapture }
+        };
+
+        public static readonly Dictionary<string, ActionTypes> PANEL_TO_TYPE_DICT = new Dictionary<string, ActionTypes>
+        {
+            { "panelProcess", ActionTypes.OpenProcess },
+            { "PanelScreenCapture", ActionTypes.ScreenCapture },
+            { "PanelKillRestartProcess", ActionTypes.KillProcess },
+            { "PanelDeleteFiles", ActionTypes.DeleteFiles },
+            { "PanelCycleProfile", ActionTypes.CycleProfile },
+        };
+
         public static readonly Point LOCATION_PANELS = new Point(DEFAULT_PANEL_X, DEFAULT_BOTTOM_OF_FORM);
         #endregion
 
@@ -103,12 +126,13 @@ namespace BindKey
             this.LocalAction = selectedAction;
             this.KeyPicker = new PickKeyCombo(this);
             this.Grabber = new ScreenGrabber(this);
-            var availableNextActions = selectedAction == null ? 
-                                       Data.SelectedActionList.Where(ka => !ka.Pinned) : 
+            var availableNextActions = selectedAction == null ?
+                                       Data.SelectedActionList.Where(ka => !ka.Pinned) :
                                        Data.SelectedActionList.Where(ka => KeyActionMeetsDisplayCriteria(ka, selectedAction));
 
             InitializeComponent();
             SetDefaultDimensionsAndLocations();
+            PopulateActionComboBox();
             PopulateNextActions(availableNextActions);
             PopulateSelectedAction(selectedAction, availableNextActions);
             RefreshProcessListView();
@@ -129,6 +153,14 @@ namespace BindKey
             }
 
             return true;
+        }
+
+        private void PopulateActionComboBox()
+        {
+            foreach (ActionTypes actionType in Enum.GetValues(typeof(ActionTypes)))
+            {
+                ActionComboBox.Items.Add(actionType.GetDescription());
+            }
         }
 
         private void PopulateNextActions(IEnumerable<IKeyAction> availableNextActions)
@@ -191,6 +223,7 @@ namespace BindKey
                 this.Width = point.X;
                 this.Height = point.Y;
                 ButtonSave.Location = new Point(DEFAULT_BUTTON_X, DEFAULT_BOTTOM_OF_FORM + height + CONTROL_MARGIN);
+                ButtonSave.Enabled = type != ActionTypes.None;
             }
         }
 
@@ -201,7 +234,7 @@ namespace BindKey
 
         private ActionTypes ResolveSelectedAction()
         {
-            return (ActionTypes)Enum.Parse(typeof(ActionTypes), ActionGroupBox.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked).Name, true);
+            return DESCRIPTION_TO_TYPE_DICT[ActionComboBox.Text];
         }
 
         public void DrawKeyDisplay()
@@ -240,7 +273,8 @@ namespace BindKey
                         }
                     }
                 }
-
+                newAction.Pinned = CheckBoxPinned.Checked == false;
+                Data.PinUnpinKeyAction(newAction);
                 this.Close();
                 this.Dispose();
             }
@@ -248,17 +282,10 @@ namespace BindKey
 
         private void ShowHidePanels(ActionTypes type)
         {
-            if (type == ActionTypes.None) return;
-            panelProcess.Visible = type == ActionTypes.OpenProcess;
-            PanelScreenCapture.Visible = type == ActionTypes.ScreenCapture;
-            PanelKillRestartProcess.Visible = type == ActionTypes.KillProcess;
-            PanelDeleteFiles.Visible = type == ActionTypes.DeleteFiles;
-            PanelCycleProfile.Visible = type == ActionTypes.CycleProfile;
-        }
-
-        private void ActionRadio_CheckedChanged(object sender, EventArgs e)
-        {
-            FormAdjustOfType(ResolveSelectedAction());
+            foreach (Panel panel in Controls.OfType<Panel>().Where(p => p.Tag.ToString() == "ActionPanel"))
+            {
+                panel.Visible = type == PANEL_TO_TYPE_DICT[panel.Name];
+            }
         }
 
         private void RefreshProcessListView()
@@ -370,6 +397,11 @@ namespace BindKey
             {
                 KillRestartProcessNameTextBox.Text = KillProcessListView.SelectedItems[0].Text;
             }
+        }
+
+        private void ActionComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            FormAdjustOfType(ResolveSelectedAction());
         }
 
         public static Bitmap GetBitMapFromRegion(Rectangle rectangle)

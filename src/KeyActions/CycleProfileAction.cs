@@ -45,7 +45,7 @@ namespace BindKey.KeyActions
             try
             {
                 var newProfileName = BindKey.GetInstance().CycleProfile(this.IsForward);
-                BindKey.GetInstance().ShowBalloonTip("BindKey", $"Cycled to profile: {newProfileName}.", ToolTipIcon.Info);
+                BindKey.GetInstance().ShowBalloonTip("BindKey", $"Cycled to profile: {newProfileName}", ToolTipIcon.Info);
             }
             catch (Exception e)
             {

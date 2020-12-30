@@ -46,9 +46,11 @@
             this.ProfileAdd = new System.Windows.Forms.Button();
             this.ProfileRemove = new System.Windows.Forms.Button();
             this.ListItemMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.pinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.disableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.ListItemMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -200,32 +202,48 @@
             // ListItemMenuStrip
             // 
             this.ListItemMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.pinToolStripMenuItem,
             this.editToolStripMenuItem,
             this.removeToolStripMenuItem});
             this.ListItemMenuStrip.Name = "ListItemMenuStrip";
-            this.ListItemMenuStrip.Size = new System.Drawing.Size(118, 70);
+            this.ListItemMenuStrip.Size = new System.Drawing.Size(181, 70);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.editToolStripMenuItem1,
+            this.pinToolStripMenuItem,
+            this.disableToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.editToolStripMenuItem.Text = "Edit";
             // 
             // pinToolStripMenuItem
             // 
             this.pinToolStripMenuItem.Name = "pinToolStripMenuItem";
-            this.pinToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.pinToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.pinToolStripMenuItem.Text = "Pin";
             this.pinToolStripMenuItem.Click += new System.EventHandler(this.pinToolStripMenuItem_Click);
             // 
-            // editToolStripMenuItem
+            // disableToolStripMenuItem
             // 
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
-            this.editToolStripMenuItem.Text = "Edit";
-            this.editToolStripMenuItem.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
+            this.disableToolStripMenuItem.Name = "disableToolStripMenuItem";
+            this.disableToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.disableToolStripMenuItem.Text = "Disable";
+            this.disableToolStripMenuItem.Click += new System.EventHandler(this.disableToolStripMenuItem_Click);
             // 
             // removeToolStripMenuItem
             // 
             this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
-            this.removeToolStripMenuItem.Size = new System.Drawing.Size(117, 22);
+            this.removeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.removeToolStripMenuItem.Text = "Remove";
             this.removeToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
+            // 
+            // editToolStripMenuItem1
+            // 
+            this.editToolStripMenuItem1.Name = "editToolStripMenuItem1";
+            this.editToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.editToolStripMenuItem1.Text = "Edit";
+            this.editToolStripMenuItem1.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
             // 
             // BindKey
             // 
@@ -267,11 +285,13 @@
         private System.Windows.Forms.Button ProfileRemove;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip ListItemMenuStrip;
-        private System.Windows.Forms.ToolStripMenuItem pinToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem githubToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pinToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem disableToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem1;
     }
 }
 

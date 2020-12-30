@@ -29,20 +29,18 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Add));
-            this.OpenProcess = new System.Windows.Forms.RadioButton();
             this.panelProcess = new System.Windows.Forms.Panel();
             this.ButtonOpenProcessFileDialog = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.OpenFilePathTextBox = new System.Windows.Forms.TextBox();
             this.ActionGroupBox = new System.Windows.Forms.GroupBox();
-            this.CycleProfile = new System.Windows.Forms.RadioButton();
-            this.DeleteFiles = new System.Windows.Forms.RadioButton();
+            this.CheckBoxPinned = new System.Windows.Forms.CheckBox();
+            this.ActionComboBox = new System.Windows.Forms.ComboBox();
             this.NextActionCombo = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.NextActionLabel = new System.Windows.Forms.Label();
-            this.KillProcess = new System.Windows.Forms.RadioButton();
             this.CheckBoxEnabled = new System.Windows.Forms.CheckBox();
-            this.ScreenCapture = new System.Windows.Forms.RadioButton();
             this.ButtonSave = new System.Windows.Forms.Button();
             this.PanelScreenCapture = new System.Windows.Forms.Panel();
             this.ButtonTakeScreenshotFileDialog = new System.Windows.Forms.Button();
@@ -78,7 +76,6 @@
             this.RadioCycleBackward = new System.Windows.Forms.RadioButton();
             this.RadioCycleForward = new System.Windows.Forms.RadioButton();
             this.label9 = new System.Windows.Forms.Label();
-            this.CheckBoxPinned = new System.Windows.Forms.CheckBox();
             this.panelProcess.SuspendLayout();
             this.ActionGroupBox.SuspendLayout();
             this.PanelScreenCapture.SuspendLayout();
@@ -88,18 +85,6 @@
             this.PanelDeleteFiles.SuspendLayout();
             this.PanelCycleProfile.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // OpenProcess
-            // 
-            this.OpenProcess.AutoSize = true;
-            this.OpenProcess.Location = new System.Drawing.Point(9, 22);
-            this.OpenProcess.Name = "OpenProcess";
-            this.OpenProcess.Size = new System.Drawing.Size(161, 17);
-            this.OpenProcess.TabIndex = 2;
-            this.OpenProcess.TabStop = true;
-            this.OpenProcess.Text = "Open Folder or Start Process";
-            this.OpenProcess.UseVisualStyleBackColor = true;
-            this.OpenProcess.CheckedChanged += new System.EventHandler(this.ActionRadio_CheckedChanged);
             // 
             // panelProcess
             // 
@@ -112,6 +97,7 @@
             this.panelProcess.Name = "panelProcess";
             this.panelProcess.Size = new System.Drawing.Size(248, 80);
             this.panelProcess.TabIndex = 15;
+            this.panelProcess.Tag = "ActionPanel";
             this.panelProcess.Visible = false;
             // 
             // ButtonOpenProcessFileDialog
@@ -155,101 +141,81 @@
             // 
             // ActionGroupBox
             // 
-            this.ActionGroupBox.Controls.Add(this.CycleProfile);
-            this.ActionGroupBox.Controls.Add(this.DeleteFiles);
+            this.ActionGroupBox.Controls.Add(this.CheckBoxPinned);
+            this.ActionGroupBox.Controls.Add(this.ActionComboBox);
             this.ActionGroupBox.Controls.Add(this.NextActionCombo);
+            this.ActionGroupBox.Controls.Add(this.label10);
             this.ActionGroupBox.Controls.Add(this.NextActionLabel);
-            this.ActionGroupBox.Controls.Add(this.KillProcess);
             this.ActionGroupBox.Controls.Add(this.CheckBoxEnabled);
-            this.ActionGroupBox.Controls.Add(this.ScreenCapture);
-            this.ActionGroupBox.Controls.Add(this.OpenProcess);
             this.ActionGroupBox.Location = new System.Drawing.Point(12, 85);
             this.ActionGroupBox.Name = "ActionGroupBox";
-            this.ActionGroupBox.Size = new System.Drawing.Size(248, 174);
+            this.ActionGroupBox.Size = new System.Drawing.Size(248, 85);
             this.ActionGroupBox.TabIndex = 16;
             this.ActionGroupBox.TabStop = false;
-            this.ActionGroupBox.Text = "Action";
+            this.ActionGroupBox.Text = "Action Options";
             // 
-            // CycleProfile
+            // CheckBoxPinned
             // 
-            this.CycleProfile.AutoSize = true;
-            this.CycleProfile.Location = new System.Drawing.Point(9, 114);
-            this.CycleProfile.Name = "CycleProfile";
-            this.CycleProfile.Size = new System.Drawing.Size(83, 17);
-            this.CycleProfile.TabIndex = 21;
-            this.CycleProfile.TabStop = true;
-            this.CycleProfile.Text = "Cycle Profile";
-            this.CycleProfile.UseVisualStyleBackColor = true;
-            this.CycleProfile.CheckedChanged += new System.EventHandler(this.ActionRadio_CheckedChanged);
+            this.CheckBoxPinned.AutoSize = true;
+            this.CheckBoxPinned.Location = new System.Drawing.Point(182, 0);
+            this.CheckBoxPinned.Name = "CheckBoxPinned";
+            this.CheckBoxPinned.Size = new System.Drawing.Size(59, 17);
+            this.CheckBoxPinned.TabIndex = 22;
+            this.CheckBoxPinned.Text = "Pinned";
+            this.CheckBoxPinned.UseVisualStyleBackColor = true;
             // 
-            // DeleteFiles
+            // ActionComboBox
             // 
-            this.DeleteFiles.AutoSize = true;
-            this.DeleteFiles.Location = new System.Drawing.Point(9, 91);
-            this.DeleteFiles.Name = "DeleteFiles";
-            this.DeleteFiles.Size = new System.Drawing.Size(80, 17);
-            this.DeleteFiles.TabIndex = 5;
-            this.DeleteFiles.TabStop = true;
-            this.DeleteFiles.Text = "Delete Files";
-            this.DeleteFiles.UseVisualStyleBackColor = true;
-            this.DeleteFiles.CheckedChanged += new System.EventHandler(this.ActionRadio_CheckedChanged);
+            this.ActionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ActionComboBox.FormattingEnabled = true;
+            this.ActionComboBox.Location = new System.Drawing.Point(77, 25);
+            this.ActionComboBox.Name = "ActionComboBox";
+            this.ActionComboBox.Size = new System.Drawing.Size(165, 21);
+            this.ActionComboBox.TabIndex = 22;
+            this.ActionComboBox.SelectedIndexChanged += new System.EventHandler(this.ActionComboBox_SelectedIndexChanged);
             // 
             // NextActionCombo
             // 
             this.NextActionCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.NextActionCombo.FormattingEnabled = true;
-            this.NextActionCombo.Location = new System.Drawing.Point(77, 142);
+            this.NextActionCombo.Location = new System.Drawing.Point(77, 50);
             this.NextActionCombo.Name = "NextActionCombo";
             this.NextActionCombo.Size = new System.Drawing.Size(165, 21);
             this.NextActionCombo.TabIndex = 6;
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 28);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(40, 13);
+            this.label10.TabIndex = 23;
+            this.label10.Text = "Action:";
+            // 
             // NextActionLabel
             // 
             this.NextActionLabel.AutoSize = true;
-            this.NextActionLabel.Location = new System.Drawing.Point(6, 145);
+            this.NextActionLabel.Location = new System.Drawing.Point(6, 53);
             this.NextActionLabel.Name = "NextActionLabel";
             this.NextActionLabel.Size = new System.Drawing.Size(65, 13);
             this.NextActionLabel.TabIndex = 20;
             this.NextActionLabel.Text = "Next Action:";
-            // 
-            // KillProcess
-            // 
-            this.KillProcess.AutoSize = true;
-            this.KillProcess.Location = new System.Drawing.Point(9, 45);
-            this.KillProcess.Name = "KillProcess";
-            this.KillProcess.Size = new System.Drawing.Size(79, 17);
-            this.KillProcess.TabIndex = 3;
-            this.KillProcess.TabStop = true;
-            this.KillProcess.Text = "Kill Process";
-            this.KillProcess.UseVisualStyleBackColor = true;
-            this.KillProcess.CheckedChanged += new System.EventHandler(this.ActionRadio_CheckedChanged);
             // 
             // CheckBoxEnabled
             // 
             this.CheckBoxEnabled.AutoSize = true;
             this.CheckBoxEnabled.Checked = true;
             this.CheckBoxEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckBoxEnabled.Location = new System.Drawing.Point(177, 0);
+            this.CheckBoxEnabled.Location = new System.Drawing.Point(116, 0);
             this.CheckBoxEnabled.Name = "CheckBoxEnabled";
             this.CheckBoxEnabled.Size = new System.Drawing.Size(65, 17);
             this.CheckBoxEnabled.TabIndex = 1;
             this.CheckBoxEnabled.Text = "Enabled";
             this.CheckBoxEnabled.UseVisualStyleBackColor = true;
             // 
-            // ScreenCapture
-            // 
-            this.ScreenCapture.AutoSize = true;
-            this.ScreenCapture.Location = new System.Drawing.Point(9, 68);
-            this.ScreenCapture.Name = "ScreenCapture";
-            this.ScreenCapture.Size = new System.Drawing.Size(107, 17);
-            this.ScreenCapture.TabIndex = 4;
-            this.ScreenCapture.TabStop = true;
-            this.ScreenCapture.Text = "Take Screenshot";
-            this.ScreenCapture.UseVisualStyleBackColor = true;
-            this.ScreenCapture.CheckedChanged += new System.EventHandler(this.ActionRadio_CheckedChanged);
-            // 
             // ButtonSave
             // 
+            this.ButtonSave.Enabled = false;
             this.ButtonSave.Location = new System.Drawing.Point(12, 310);
             this.ButtonSave.Name = "ButtonSave";
             this.ButtonSave.Size = new System.Drawing.Size(250, 23);
@@ -271,6 +237,7 @@
             this.PanelScreenCapture.Name = "PanelScreenCapture";
             this.PanelScreenCapture.Size = new System.Drawing.Size(248, 190);
             this.PanelScreenCapture.TabIndex = 0;
+            this.PanelScreenCapture.Tag = "ActionPanel";
             this.PanelScreenCapture.Visible = false;
             // 
             // ButtonTakeScreenshotFileDialog
@@ -334,6 +301,7 @@
             this.PanelKillRestartProcess.Name = "PanelKillRestartProcess";
             this.PanelKillRestartProcess.Size = new System.Drawing.Size(248, 190);
             this.PanelKillRestartProcess.TabIndex = 18;
+            this.PanelKillRestartProcess.Tag = "ActionPanel";
             this.PanelKillRestartProcess.Visible = false;
             // 
             // RefreshProcessButton
@@ -441,6 +409,7 @@
             this.PanelDeleteFiles.Name = "PanelDeleteFiles";
             this.PanelDeleteFiles.Size = new System.Drawing.Size(248, 180);
             this.PanelDeleteFiles.TabIndex = 20;
+            this.PanelDeleteFiles.Tag = "ActionPanel";
             this.PanelDeleteFiles.Visible = false;
             // 
             // DeleteSearchPatternTextBox
@@ -587,6 +556,7 @@
             this.PanelCycleProfile.Name = "PanelCycleProfile";
             this.PanelCycleProfile.Size = new System.Drawing.Size(248, 62);
             this.PanelCycleProfile.TabIndex = 21;
+            this.PanelCycleProfile.Tag = "ActionPanel";
             this.PanelCycleProfile.Visible = false;
             // 
             // RadioCycleBackward
@@ -620,23 +590,11 @@
             this.label9.TabIndex = 0;
             this.label9.Text = "Cycle Direction:";
             // 
-            // CheckBoxPinned
-            // 
-            this.CheckBoxPinned.AutoSize = true;
-            this.CheckBoxPinned.Location = new System.Drawing.Point(617, 23);
-            this.CheckBoxPinned.Name = "CheckBoxPinned";
-            this.CheckBoxPinned.Size = new System.Drawing.Size(108, 17);
-            this.CheckBoxPinned.TabIndex = 22;
-            this.CheckBoxPinned.Text = "CheckBoxPinned";
-            this.CheckBoxPinned.UseVisualStyleBackColor = true;
-            this.CheckBoxPinned.Visible = false;
-            // 
             // Add
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1249, 860);
-            this.Controls.Add(this.CheckBoxPinned);
             this.Controls.Add(this.PanelCycleProfile);
             this.Controls.Add(this.PanelDeleteFiles);
             this.Controls.Add(this.KeyComboGroupBox);
@@ -668,26 +626,22 @@
             this.PanelCycleProfile.ResumeLayout(false);
             this.PanelCycleProfile.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.RadioButton OpenProcess;
         private System.Windows.Forms.Panel panelProcess;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox OpenFilePathTextBox;
         private System.Windows.Forms.GroupBox ActionGroupBox;
         private System.Windows.Forms.Button ButtonSave;
-        private System.Windows.Forms.RadioButton ScreenCapture;
         private System.Windows.Forms.Panel PanelScreenCapture;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.CheckBox CheckBoxEnabled;
-        private System.Windows.Forms.RadioButton KillProcess;
         private System.Windows.Forms.Panel PanelKillRestartProcess;
         private System.Windows.Forms.TextBox KillRestartProcessNameTextBox;
         private System.Windows.Forms.Label label4;
@@ -716,12 +670,12 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox DeleteSearchPatternTextBox;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.RadioButton DeleteFiles;
-        private System.Windows.Forms.RadioButton CycleProfile;
         private System.Windows.Forms.Panel PanelCycleProfile;
         private System.Windows.Forms.RadioButton RadioCycleBackward;
         private System.Windows.Forms.RadioButton RadioCycleForward;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.CheckBox CheckBoxPinned;
+        private System.Windows.Forms.ComboBox ActionComboBox;
+        private System.Windows.Forms.Label label10;
     }
 }
