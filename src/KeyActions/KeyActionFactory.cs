@@ -27,6 +27,9 @@ namespace BindKey.KeyActions
                 case ActionTypes.CycleProfile:
                     res = new CycleProfileAction(options as CycleProfileOptions, GUID);
                     break;
+                case ActionTypes.ShowHideProcess:
+                    res = new ShowHideProcessAction(options as AddOptions.ShowHideProcessOptions, GUID);
+                    break;
                 default:
                     throw new ArgumentException($"DEV ERROR: could not create key action from factory of type {type}.");
             }
@@ -54,6 +57,9 @@ namespace BindKey.KeyActions
                     break;
                 case ActionTypes.CycleProfile:
                     res = new CycleProfileAction(propertyMap);
+                    break;
+                case ActionTypes.ShowHideProcess:
+                    res = new ShowHideProcessAction(propertyMap);
                     break;
                 default:
                     throw new ArgumentException($"DEV ERROR: could not create key action from factory of type {type}.");

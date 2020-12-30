@@ -7,7 +7,8 @@
         DeleteFiles = 2,
         KillProcess = 3,
         OpenProcess = 4,
-        ScreenCapture = 5
+        ScreenCapture = 5,
+        ShowHideProcess = 6
     }
 
     internal static class ActionTypesExtensions
@@ -22,6 +23,9 @@
                     break;
                 case ActionTypes.DeleteFiles:
                     res = "Delete Files";
+                    break;
+                case ActionTypes.ShowHideProcess:
+                    res = "Show or Hide a Process";
                     break;
                 case ActionTypes.KillProcess:
                     res = "Kill Process";

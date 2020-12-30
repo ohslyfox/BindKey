@@ -33,6 +33,7 @@ namespace BindKey
         public const int OPEN_PROCESS_PANEL_HEIGHT = 80;
         public const int SCREENSHOT_PROCESS_PANEL_HEIGHT = 190;
         public const int KILL_PROCESS_PANEL_HEIGHT = 190;
+        public const int SHOW_HIDE_PROCESS_PANEL_HEIGHT = 217;
         public const int DELETE_FILES_PANEL_HEIGHT = 180;
         public const int CYCLE_PROFILE_PANEL_HEIGHT = 62;
         public const int SAVE_BUTTON_HEIGHT = 23;
@@ -44,7 +45,8 @@ namespace BindKey
             { ActionTypes.ScreenCapture, SCREENSHOT_PROCESS_PANEL_HEIGHT },
             { ActionTypes.KillProcess, KILL_PROCESS_PANEL_HEIGHT },
             { ActionTypes.DeleteFiles, DELETE_FILES_PANEL_HEIGHT },
-            { ActionTypes.CycleProfile, CYCLE_PROFILE_PANEL_HEIGHT }
+            { ActionTypes.CycleProfile, CYCLE_PROFILE_PANEL_HEIGHT },
+            { ActionTypes.ShowHideProcess, SHOW_HIDE_PROCESS_PANEL_HEIGHT }
         };
 
         public static readonly Point DIMENSIONS_DEFAULT = new Point(DEFAULT_FORM_WIDTH, HEADER_HEIGHT +
@@ -79,6 +81,12 @@ namespace BindKey
                                                                                               SAVE_BUTTON_HEIGHT +
                                                                                               BOTTOM_OF_FORM_MARGIN);
 
+        public static readonly Point DIMENSIONS_SHOW_HIDE_PROCESS = new Point(DEFAULT_FORM_WIDTH, DIMENSIONS_DEFAULT.Y +
+                                                                                                  SHOW_HIDE_PROCESS_PANEL_HEIGHT +
+                                                                                                  CONTROL_MARGIN +
+                                                                                                  SAVE_BUTTON_HEIGHT +
+                                                                                                  BOTTOM_OF_FORM_MARGIN);
+
         public static readonly Dictionary<ActionTypes, Point> DIMENSIONS_DICT = new Dictionary<ActionTypes, Point>
         {
             { ActionTypes.None, DIMENSIONS_DEFAULT },
@@ -86,7 +94,8 @@ namespace BindKey
             { ActionTypes.ScreenCapture, DIMENSIONS_SCREENCAPTURE},
             { ActionTypes.KillProcess, DIMENSIONS_KILLPROCESS },
             { ActionTypes.DeleteFiles, DIMENSIONS_DELETEFILES },
-            { ActionTypes.CycleProfile, DIMENSIONS_CYCLE_PROFILE }
+            { ActionTypes.CycleProfile, DIMENSIONS_CYCLE_PROFILE },
+            { ActionTypes.ShowHideProcess, DIMENSIONS_SHOW_HIDE_PROCESS }
         };
 
         public static readonly Dictionary<string, ActionTypes> DESCRIPTION_TO_TYPE_DICT = new Dictionary<string, ActionTypes>
@@ -94,6 +103,7 @@ namespace BindKey
             { ActionTypes.None.GetDescription(), ActionTypes.None },
             { ActionTypes.CycleProfile.GetDescription(), ActionTypes.CycleProfile },
             { ActionTypes.DeleteFiles.GetDescription(), ActionTypes.DeleteFiles },
+            { ActionTypes.ShowHideProcess.GetDescription(), ActionTypes.ShowHideProcess },
             { ActionTypes.KillProcess.GetDescription(), ActionTypes.KillProcess },
             { ActionTypes.OpenProcess.GetDescription(), ActionTypes.OpenProcess },
             { ActionTypes.ScreenCapture.GetDescription(), ActionTypes.ScreenCapture }
@@ -106,6 +116,7 @@ namespace BindKey
             { "PanelKillRestartProcess", ActionTypes.KillProcess },
             { "PanelDeleteFiles", ActionTypes.DeleteFiles },
             { "PanelCycleProfile", ActionTypes.CycleProfile },
+            { "PanelFocusProcess", ActionTypes.ShowHideProcess }
         };
 
         public static readonly Point LOCATION_PANELS = new Point(DEFAULT_PANEL_X, DEFAULT_BOTTOM_OF_FORM);
@@ -291,15 +302,20 @@ namespace BindKey
         private void RefreshProcessListView()
         {
             RefreshProcessButton.Enabled = false;
+            RefreshProcessButton2.Enabled = false;
             KillProcessListView.Items.Clear();
+            FocusProcessListView.Items.Clear();
             List<string> processes = Process.GetProcesses().Select(p => p.ProcessName).Distinct().ToList();
             processes.Sort();
             foreach (var process in processes)
             {
                 KillProcessListView.Items.Add(process);
+                FocusProcessListView.Items.Add(process);
             }
             KillProcessListView.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.ColumnContent);
+            FocusProcessListView.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.ColumnContent);
             RefreshProcessButton.Enabled = true;
+            RefreshProcessButton2.Enabled = true;
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -396,6 +412,11 @@ namespace BindKey
             if (KillProcessListView.SelectedItems.Count > 0)
             {
                 KillRestartProcessNameTextBox.Text = KillProcessListView.SelectedItems[0].Text;
+            }
+
+            if (FocusProcessListView.SelectedItems.Count > 0)
+            {
+                FocusProcessNameTextBox.Text = FocusProcessListView.SelectedItems[0].Text;
             }
         }
 
