@@ -76,6 +76,14 @@
             this.RadioCycleBackward = new System.Windows.Forms.RadioButton();
             this.RadioCycleForward = new System.Windows.Forms.RadioButton();
             this.label9 = new System.Windows.Forms.Label();
+            this.PanelFocusProcess = new System.Windows.Forms.Panel();
+            this.label12 = new System.Windows.Forms.Label();
+            this.FocusProcessActionComboBox = new System.Windows.Forms.ComboBox();
+            this.RefreshProcessButton2 = new System.Windows.Forms.Button();
+            this.FocusProcessListView = new System.Windows.Forms.ListView();
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.FocusProcessNameTextBox = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.panelProcess.SuspendLayout();
             this.ActionGroupBox.SuspendLayout();
             this.PanelScreenCapture.SuspendLayout();
@@ -84,6 +92,7 @@
             this.KeyComboGroupBox.SuspendLayout();
             this.PanelDeleteFiles.SuspendLayout();
             this.PanelCycleProfile.SuspendLayout();
+            this.PanelFocusProcess.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelProcess
@@ -590,11 +599,103 @@
             this.label9.TabIndex = 0;
             this.label9.Text = "Cycle Direction:";
             // 
+            // PanelFocusProcess
+            // 
+            this.PanelFocusProcess.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PanelFocusProcess.Controls.Add(this.label12);
+            this.PanelFocusProcess.Controls.Add(this.FocusProcessActionComboBox);
+            this.PanelFocusProcess.Controls.Add(this.RefreshProcessButton2);
+            this.PanelFocusProcess.Controls.Add(this.FocusProcessListView);
+            this.PanelFocusProcess.Controls.Add(this.FocusProcessNameTextBox);
+            this.PanelFocusProcess.Controls.Add(this.label11);
+            this.PanelFocusProcess.Location = new System.Drawing.Point(363, 761);
+            this.PanelFocusProcess.Name = "PanelFocusProcess";
+            this.PanelFocusProcess.Size = new System.Drawing.Size(248, 217);
+            this.PanelFocusProcess.TabIndex = 22;
+            this.PanelFocusProcess.Tag = "ActionPanel";
+            this.PanelFocusProcess.Visible = false;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(9, 185);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(40, 13);
+            this.label12.TabIndex = 23;
+            this.label12.Text = "Action:";
+            // 
+            // FocusProcessActionComboBox
+            // 
+            this.FocusProcessActionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.FocusProcessActionComboBox.FormattingEnabled = true;
+            this.FocusProcessActionComboBox.Items.AddRange(new object[] {
+            "Focus",
+            "Minimize",
+            "Maximize",
+            "Minimize / Maximize",
+            "Minimize / Focus"});
+            this.FocusProcessActionComboBox.Location = new System.Drawing.Point(67, 182);
+            this.FocusProcessActionComboBox.Name = "FocusProcessActionComboBox";
+            this.FocusProcessActionComboBox.Size = new System.Drawing.Size(165, 21);
+            this.FocusProcessActionComboBox.TabIndex = 24;
+            // 
+            // RefreshProcessButton2
+            // 
+            this.RefreshProcessButton2.Location = new System.Drawing.Point(11, 47);
+            this.RefreshProcessButton2.Name = "RefreshProcessButton2";
+            this.RefreshProcessButton2.Size = new System.Drawing.Size(221, 23);
+            this.RefreshProcessButton2.TabIndex = 0;
+            this.RefreshProcessButton2.TabStop = false;
+            this.RefreshProcessButton2.Text = "Refresh List";
+            this.RefreshProcessButton2.UseVisualStyleBackColor = true;
+            this.RefreshProcessButton2.Click += new System.EventHandler(this.RefreshProcessButton_Click);
+            // 
+            // FocusProcessListView
+            // 
+            this.FocusProcessListView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.FocusProcessListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader2});
+            this.FocusProcessListView.FullRowSelect = true;
+            this.FocusProcessListView.GridLines = true;
+            this.FocusProcessListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.FocusProcessListView.HideSelection = false;
+            this.FocusProcessListView.Location = new System.Drawing.Point(11, 76);
+            this.FocusProcessListView.MultiSelect = false;
+            this.FocusProcessListView.Name = "FocusProcessListView";
+            this.FocusProcessListView.Size = new System.Drawing.Size(221, 100);
+            this.FocusProcessListView.TabIndex = 0;
+            this.FocusProcessListView.TabStop = false;
+            this.FocusProcessListView.UseCompatibleStateImageBehavior = false;
+            this.FocusProcessListView.View = System.Windows.Forms.View.Details;
+            this.FocusProcessListView.SelectedIndexChanged += new System.EventHandler(this.KillProcessListView_SelectedIndexChanged);
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Process Name";
+            // 
+            // FocusProcessNameTextBox
+            // 
+            this.FocusProcessNameTextBox.Location = new System.Drawing.Point(11, 21);
+            this.FocusProcessNameTextBox.Name = "FocusProcessNameTextBox";
+            this.FocusProcessNameTextBox.Size = new System.Drawing.Size(221, 20);
+            this.FocusProcessNameTextBox.TabIndex = 0;
+            this.FocusProcessNameTextBox.TabStop = false;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(8, 6);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(79, 13);
+            this.label11.TabIndex = 0;
+            this.label11.Text = "Process Name:";
+            // 
             // Add
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1249, 860);
+            this.ClientSize = new System.Drawing.Size(710, 1161);
+            this.Controls.Add(this.PanelFocusProcess);
             this.Controls.Add(this.PanelCycleProfile);
             this.Controls.Add(this.PanelDeleteFiles);
             this.Controls.Add(this.KeyComboGroupBox);
@@ -625,6 +726,8 @@
             this.PanelDeleteFiles.PerformLayout();
             this.PanelCycleProfile.ResumeLayout(false);
             this.PanelCycleProfile.PerformLayout();
+            this.PanelFocusProcess.ResumeLayout(false);
+            this.PanelFocusProcess.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -677,5 +780,13 @@
         private System.Windows.Forms.CheckBox CheckBoxPinned;
         private System.Windows.Forms.ComboBox ActionComboBox;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Panel PanelFocusProcess;
+        private System.Windows.Forms.Button RefreshProcessButton2;
+        private System.Windows.Forms.ListView FocusProcessListView;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.TextBox FocusProcessNameTextBox;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.ComboBox FocusProcessActionComboBox;
     }
 }

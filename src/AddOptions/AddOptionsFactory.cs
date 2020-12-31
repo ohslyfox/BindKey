@@ -26,6 +26,9 @@ namespace BindKey.AddOptions
                 case ActionTypes.CycleProfile:
                     res = new CycleProfileOptions(addForm);
                     break;
+                case ActionTypes.ShowHideProcess:
+                    res = new ShowHideProcessOptions(addForm);
+                    break;
                 default:
                     throw new ArgumentException($"DEV ERROR: could not create add options from factory of type {type}.");
             }

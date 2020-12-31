@@ -63,7 +63,7 @@ namespace BindKey
                 }
             }
             ProfileComboBox.DropDownHeight = ProfileComboBox.Items.Count > 0 ? 150 : 17;
-            EnableDisableNonProfileControls(ProfileComboBox.Items.Count > 0);
+            EnableDisableProfileRelatedControls(ProfileComboBox.Items.Count > 0);
         }
 
         private IKeyAction ResolveSelectedKeyAction()
@@ -87,10 +87,11 @@ namespace BindKey
             return res;
         }
 
-        private void EnableDisableNonProfileControls(bool enable)
+        private void EnableDisableProfileRelatedControls(bool enable)
         {
             listView1.Enabled = enable;
             ButtonAdd.Enabled = enable;
+            ProfileRemove.Enabled = enable;
         }
 
         private void EnableDisableControls(bool enable)
@@ -187,7 +188,7 @@ namespace BindKey
 
         private void CreateAddForm(IKeyAction selectedAction)
         {
-            if (AddForm == null && ProfileForm == null)
+            if (AddForm == null && ProfileForm == null && Data.ProfileNames.Any())
             {
                 EnableDisableControls(false);
                 HookManager.CleanHook();
@@ -255,7 +256,7 @@ namespace BindKey
             RefreshProfileList();
             RefreshListAndKeyHooks();
             EnableDisableControls(true);
-            EnableDisableNonProfileControls(ProfileComboBox.Items.Count > 0);
+            EnableDisableProfileRelatedControls(ProfileComboBox.Items.Count > 0);
         }
 
         private void ProfileRemove_Click(object sender, EventArgs e)

@@ -7,8 +7,8 @@ namespace BindKey.KeyActions
 {
     internal class KillProcessAction : DefaultKeyAction
     {
-        public string ProcessName { get; }
         public override ActionTypes Type { get => ActionTypes.KillProcess; }
+        public string ProcessName { get; }
 
         public KillProcessAction(KillProcessOptions options, string GUID = "")
             : base(options, GUID)
@@ -44,13 +44,8 @@ namespace BindKey.KeyActions
             try
             {
                 Process[] processes = Process.GetProcessesByName(ProcessName);
-                string filePath = string.Empty;
                 foreach (Process process in processes)
                 {
-                    if (filePath == string.Empty && process.MainModule != null)
-                    {
-                        filePath = process.MainModule.FileName;
-                    }
                     process.Kill();
                 }
             }
