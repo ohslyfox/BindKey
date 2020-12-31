@@ -8,18 +8,8 @@ using System.Windows.Forms;
 
 namespace BindKey.KeyActions
 {
-    internal enum ActionTypes
-    {
-        None = 0,
-        OpenProcess = 1,
-        ScreenCapture = 2,
-        KillProcess = 3,
-        DeleteFiles = 4,
-        CycleProfile = 5
-    }
-
     internal delegate void KeyAction();
-
+    
     internal interface IKeyAction
     {
         ActionTypes Type { get; }
@@ -28,7 +18,7 @@ namespace BindKey.KeyActions
         string SaveString { get; }
         string GUID { get; }
         string NextKeyActionGUID { get; }
-        bool Enabled { get; }
+        bool Enabled { get; set; }
         bool Pinned { get; set; }
         KeyAction Action { get; }
         IKeyAction NextKeyAction { get; }
@@ -83,7 +73,7 @@ namespace BindKey.KeyActions
         }
 
         public IKeyAction NextKeyAction { get; private set; }
-        public bool Enabled { get; private set; }
+        public bool Enabled { get; set; }
         public bool Pinned { get; set; }
         public Keys[] Keys { get; private set; }
         public string SaveString { get => string.Join(DELIMITER, ItemsToSave.Select(kvp => $"{kvp.Key},{kvp.Value}")); }

@@ -120,7 +120,7 @@ namespace BindKey.Util
                 var keyActionsToClear = this.ProfileMap.Where(kvp => kvp.Key != SelectedProfile)
                                                        .SelectMany(kvp => kvp.Value)
                                                        .Select(kvp => kvp.Value)
-                                                       .Where(ka => ka.KeyCombo == keyAction.KeyCombo);
+                                                       .Where(ka => ka.KeyCombo == keyAction.KeyCombo && ka.GUID != keyAction.GUID);
                 foreach (IKeyAction action in keyActionsToClear)
                 {
                     action.ClearKeyCombo();
@@ -136,6 +136,22 @@ namespace BindKey.Util
             }
             keyAction.Pinned = !keyAction.Pinned;
             RefreshNextKeyActions();
+        }
+
+        public void EnableDisableKeyAction(IKeyAction keyAction)
+        {
+            bool enabled = !keyAction.Enabled;
+            keyAction.Enabled = enabled;
+            if (keyAction.Pinned)
+            {
+                foreach (var kvp in this.ProfileMap.Where(kvp => kvp.Key != SelectedProfile))
+                {
+                    if (kvp.Value.ContainsKey(keyAction.GUID))
+                    {
+                        kvp.Value[keyAction.GUID].Enabled = enabled;
+                    }
+                }
+            }
         }
 
         private void LoadData()

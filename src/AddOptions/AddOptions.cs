@@ -19,6 +19,7 @@ namespace BindKey.AddOptions
 
     internal abstract class DefaultAddOptions : IAddOptions
     {
+        public const string CONTROL_ACTION_COMBO_BOX = "ActionComboBox";
         public const string CONTROL_ENABLED = "CheckBoxEnabled";
         public const string CONTROL_PINNED = "CheckBoxPinned";
 
@@ -75,7 +76,7 @@ namespace BindKey.AddOptions
             this.AddForm.Keys[2] = keys[2];
             SetControl<CheckBox>(CONTROL_PINNED, action.Pinned);
             SetControl<CheckBox>(CONTROL_ENABLED, action.Enabled);
-            SetControl<RadioButton>(action.Type.ToString(), true);
+            SetControl<ComboBox>(CONTROL_ACTION_COMBO_BOX, action.Type);
         }
 
         protected Control GetControl(string name)
@@ -95,7 +96,8 @@ namespace BindKey.AddOptions
                 { typeof(TextBox), (x, y) => { (GetControl(x) as TextBox).Text = (string)y; } },
                 { typeof(CheckBox), (x, y) => { (GetControl(x) as CheckBox).Checked = (bool)y; } },
                 { typeof(PictureBox), (x, y) => { (GetControl(x) as PictureBox).Image = (Bitmap)y; } },
-                { typeof(RadioButton), (x, y) => { (GetControl(x) as RadioButton).Checked = (bool)y; } }
+                { typeof(RadioButton), (x, y) => { (GetControl(x) as RadioButton).Checked = (bool)y; } },
+                { typeof(ComboBox), (x, y) => { (GetControl(x) as ComboBox).SelectedIndex = (int)y; } }
             };
         }
     }

@@ -85,6 +85,7 @@
     <Compile Include="AddOptions\AddOptionsFactory.cs" />
     <Compile Include="AddOptions\CycleProfileOptions.cs" />
     <Compile Include="AddOptions\DeleteFilesOptions.cs" />
+    <Compile Include="AddOptions\ShowHideProcessOptions.cs" />
     <Compile Include="AddOptions\KillProcessOptions.cs" />
     <Compile Include="AddOptions\OpenProcessOptions.cs" />
     <Compile Include="AddOptions\ScreenCaptureOptions.cs" />
@@ -94,8 +95,10 @@
     <Compile Include="BindKey.Designer.cs">
       <DependentUpon>BindKey.cs</DependentUpon>
     </Compile>
+    <Compile Include="KeyActions\ActionTypes.cs" />
     <Compile Include="KeyActions\CycleProfileAction.cs" />
     <Compile Include="KeyActions\DeleteFilesAction.cs" />
+    <Compile Include="KeyActions\ShowHideProcessAction.cs" />
     <Compile Include="KeyActions\KeyAction.cs" />
     <Compile Include="KeyActions\KeyActionFactory.cs" />
     <Compile Include="KeyActions\KillProcessAction.cs" />

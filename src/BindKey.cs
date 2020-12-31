@@ -11,7 +11,7 @@ namespace BindKey
 {
     public partial class BindKey : Form
     {
-        private KeyActionData Data { get; set; }
+        private KeyActionData Data { get; }
         private Add AddForm { get; set; }
         private Profile ProfileForm { get; set; }
         private bool GlobalDisable { get; set; }
@@ -63,7 +63,7 @@ namespace BindKey
                 }
             }
             ProfileComboBox.DropDownHeight = ProfileComboBox.Items.Count > 0 ? 150 : 17;
-            EnableDisableNonProfileControls(ProfileComboBox.Items.Count > 0);
+            EnableDisableProfileRelatedControls(ProfileComboBox.Items.Count > 0);
         }
 
         private IKeyAction ResolveSelectedKeyAction()
@@ -87,10 +87,11 @@ namespace BindKey
             return res;
         }
 
-        private void EnableDisableNonProfileControls(bool enable)
+        private void EnableDisableProfileRelatedControls(bool enable)
         {
             listView1.Enabled = enable;
             ButtonAdd.Enabled = enable;
+            ProfileRemove.Enabled = enable;
         }
 
         private void EnableDisableControls(bool enable)
@@ -187,7 +188,7 @@ namespace BindKey
 
         private void CreateAddForm(IKeyAction selectedAction)
         {
-            if (AddForm == null && ProfileForm == null)
+            if (AddForm == null && ProfileForm == null && Data.ProfileNames.Any())
             {
                 EnableDisableControls(false);
                 HookManager.CleanHook();
@@ -255,7 +256,7 @@ namespace BindKey
             RefreshProfileList();
             RefreshListAndKeyHooks();
             EnableDisableControls(true);
-            EnableDisableNonProfileControls(ProfileComboBox.Items.Count > 0);
+            EnableDisableProfileRelatedControls(ProfileComboBox.Items.Count > 0);
         }
 
         private void ProfileRemove_Click(object sender, EventArgs e)
@@ -320,6 +321,7 @@ namespace BindKey
                     if (selectedKeyAction != null)
                     {
                         pinToolStripMenuItem.Text = selectedKeyAction.Pinned ? "Unpin" : "Pin";
+                        disableToolStripMenuItem.Text = selectedKeyAction.Enabled ? "Disable" : "Enable";
                         ListItemMenuStrip.Show(new Point(Cursor.Position.X - 12, Cursor.Position.Y - 4));
                     }
                 }
@@ -356,6 +358,19 @@ namespace BindKey
                 {
                     Data.PinUnpinKeyAction(selectedKeyAction);
                     DrawListView();
+                }
+            }
+        }
+
+        private void disableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (AddForm == null && ProfileForm == null)
+            {
+                var selectedKeyAction = ResolveSelectedKeyAction();
+                if (selectedKeyAction != null)
+                {
+                    Data.EnableDisableKeyAction(selectedKeyAction);
+                    RefreshListAndKeyHooks();
                 }
             }
         }
