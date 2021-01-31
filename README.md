@@ -9,41 +9,31 @@ BindKey supports profiles. Profiles can be used to categorize groups of key bind
 
 To begin, create a profile
 
-<center>
-    <img src="https://media4.giphy.com/media/2wHwdPXrkJnvGMu24l/giphy.gif">
-</center>
+![](resources/1.gif)
 
 <br/>
 
 Next, add an event. A dialog-box will prompt you to specify a key binding and select the type of action you wish to bind.
 
-<center>
-    <img src="https://media3.giphy.com/media/mZOxON9Taib3HWXp1I/giphy.gif">
-</center>
+![](resources/2.gif)
 
 <br/>
 
 BindKey also supports chaining actions together. In this example, a kill-process action is chained with an open process action allowing for a kill-and-restart action to be performed from a single key press.
 
-<center>
-    <img src="https://media2.giphy.com/media/Wz1dltZfvm1jTidwjk/giphy.gif">
-</center>
+![](resources/3.gif)
 
 <br/>
 
 Actions can be pinned, making them available across all profiles.
 
-<center>
-    <img src="https://media1.giphy.com/media/aEmVU6biPDEVrEVvwq/giphy.gif">
-</center>
+![](resources/4.gif)
 
 <br/>
 
 Right click on actions to edit or remove them.
 
-<center>
-    <img src="https://media0.giphy.com/media/tHiPAVrTKrKFMdNDXI/giphy.gif">
-</center>
+![](resources/5.gif)
 
 
 # Tips
