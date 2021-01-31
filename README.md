@@ -22,13 +22,13 @@ Next, add an event. A dialog-box will prompt you to specify a key binding and se
 
 BindKey also supports chaining actions together. In this example, a kill-process action is chained with an open process action allowing for a kill-and-restart action to be performed from a single key press.
 
-![](https://media2.giphy.com/media/WifZ9My241JKDqH3m7/giphy.gif)
+![](https://media2.giphy.com/media/4ql2EanO4oppmO5ME1/giphy.gif)
 
 <br/>
 
 Actions can be pinned, making them available across all profiles.
 
-![](https://media0.giphy.com/media/USNX64w1JwdRPzihpi/giphy.gif)
+![](https://media2.giphy.com/media/Mv5hWn0nPKqShzenxx/giphy.gif)
 
 <br/>
 
