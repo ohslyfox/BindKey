@@ -1,11 +1,12 @@
 # What is it?
 
-Bindkey is a background application designed to quickly execute common Windows operations via a single keybind press. 
+Bindkey is a background application designed to quickly execute common Windows operations via a single key press. 
 
+<br/>
 
 # Getting started
 
-BindKey supports profiles. Profiles can be used to categorize groups of key bindings. Only the currently selected profile's bindings will be active at a given time.
+BindKey uses profiles to categorize keybinds. Only the currently selected profile's bindings will be active at a given time.
 
 To begin, create a profile
 
@@ -35,6 +36,7 @@ Right click on actions to edit or remove them.
 
 ![](resources/5.gif)
 
+<br/>
 
 # Tips
 
