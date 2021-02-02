@@ -103,7 +103,7 @@ namespace BindKey.KeyActions
             }
             catch
             {
-                BindKey.GetInstance().ShowBalloonTip("Error", $"Could not {this.ActionToTake.GetDescription()} {this.ProcessName}.", ToolTipIcon.Error);
+                BindKey.ShowBalloonTip("Error", $"Could not {this.ActionToTake.GetDescription()} {this.ProcessName}.", ToolTipIcon.Error);
             }
         }
 

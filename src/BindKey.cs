@@ -17,7 +17,7 @@ namespace BindKey
         private bool GlobalDisable { get; set; }
 
         private static BindKey SingletonInstance = null;
-        public static BindKey GetInstance()
+        private static BindKey GetInstance()
         {
             if (SingletonInstance == null)
             {
@@ -34,12 +34,13 @@ namespace BindKey
             this.RefreshListAndKeyHooks();
             this.RefreshProfileList();
             this.FormClosing += new FormClosingEventHandler(CloseButtonClicked);
+            this.Data.ProfileChanged += ProfileUpdated;
             SingletonInstance = this;
         }
 
-        public void ShowBalloonTip(string title, string message, ToolTipIcon icon)
+        public static void ShowBalloonTip(string title, string message, ToolTipIcon icon)
         {
-            notifyIcon1.ShowBalloonTip(1250, title, message, icon);
+            GetInstance().notifyIcon1.ShowBalloonTip(1250, title, message, icon);
         }
 
         private void RefreshListAndKeyHooks()
@@ -277,33 +278,22 @@ namespace BindKey
             }
         }
 
-        public string CycleProfile(bool forward = true)
+        private void ProfileUpdated(object sender, ProfileNameChangedEventArgs e)
         {
-            string res = string.Empty;
-            if (this.ProfileComboBox.Items.Count > 0)
+            for (int i = 0; i < ProfileComboBox.Items.Count; i++)
             {
-                int newIndex = forward ? this.ProfileComboBox.SelectedIndex + 1 : this.ProfileComboBox.SelectedIndex - 1;
-                if (newIndex >= this.ProfileComboBox.Items.Count)
+                if (ProfileComboBox.GetItemText(ProfileComboBox.Items[i]) == e.NewProfileName)
                 {
-                    newIndex = 0;
+                    this.ProfileComboBox.SelectedIndex = i;
+                    return;
                 }
-                else if (newIndex < 0)
-                {
-                    newIndex = this.ProfileComboBox.Items.Count - 1;
-                }
-                res = ProfileComboBox.Items[newIndex].ToString();
-                this.ProfileComboBox.SelectedIndex = newIndex;
             }
-            return res;
         }
 
         private void ProfileComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ProfileComboBox.Text != Data.SelectedProfile)
-            {
-                Data.SelectedProfile = ProfileComboBox.Text;
-                RefreshListAndKeyHooks();
-            }
+            Data.SelectedProfile = ProfileComboBox.Text;
+            RefreshListAndKeyHooks();
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)

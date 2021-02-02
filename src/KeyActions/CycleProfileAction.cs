@@ -1,6 +1,8 @@
 ﻿using BindKey.AddOptions;
+using BindKey.Util;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace BindKey.KeyActions
@@ -44,12 +46,24 @@ namespace BindKey.KeyActions
         {
             try
             {
-                var newProfileName = BindKey.GetInstance().CycleProfile(this.IsForward);
-                BindKey.GetInstance().ShowBalloonTip("BindKey", $"Cycled to profile: {newProfileName}", ToolTipIcon.Info);
+                var data = KeyActionData.GetInstance();
+                var names = data.ProfileNames.ToList();
+                var index = names.FindIndex(n => n == data.SelectedProfile);
+                int newIndex = IsForward ? index + 1 : index - 1;
+                if (newIndex >= names.Count)
+                {
+                    newIndex = 0;
+                }
+                else if (newIndex < 0)
+                {
+                    newIndex = names.Count - 1;
+                }
+                data.SelectedProfile = names[newIndex];
+                BindKey.ShowBalloonTip("BindKey", $"Cycled to profile: {names[newIndex]}", ToolTipIcon.Info);
             }
             catch (Exception e)
             {
-                BindKey.GetInstance().ShowBalloonTip("Error", $"Could not cycle profile. Please report this message {e.Message}.", ToolTipIcon.Error);
+                BindKey.ShowBalloonTip("Error", $"Could not cycle profile. Please report this message {e.Message}.", ToolTipIcon.Error);
             }
         }
 

@@ -9,13 +9,24 @@ namespace BindKey.Util
 {
     internal class KeyActionData
     {
+        private static KeyActionData SingletonInstance = null;
+        public static KeyActionData GetInstance()
+        {
+            if (SingletonInstance == null)
+            {
+                throw new Exception("Attempted to access instance of KeyActionData before it was instantiated.");
+            }
+            return SingletonInstance;
+        }
+
         private string _filePath = string.Empty;
         private string FilePath { get => string.IsNullOrEmpty(_filePath) ? "save.bk" : _filePath; }
 
         public Dictionary<string /* profile name */, Dictionary<string /* action GUID */, IKeyAction>> ProfileMap { get; private set; }
 
+        public event EventHandler<ProfileNameChangedEventArgs> ProfileChanged;
         private string _selectedProfile = string.Empty;
-        public string SelectedProfile { get => _selectedProfile; set => _selectedProfile = ProfileNames.Contains(value) ? value : _selectedProfile; }
+        public string SelectedProfile { get => _selectedProfile; set => SelectProfile(value); }
         public Dictionary<string, IKeyAction> SelectedActionMap
         {
             get
@@ -45,6 +56,7 @@ namespace BindKey.Util
             this.ProfileMap = new Dictionary<string, Dictionary<string, IKeyAction>>();
             this.LoadData();
             this.RefreshNextKeyActions();
+            SingletonInstance = this;
         }
 
         public void RefreshNextKeyActions()
@@ -154,6 +166,15 @@ namespace BindKey.Util
             }
         }
 
+        private void SelectProfile(string profileName)
+        {
+            if (ProfileNames.Contains(profileName))
+            {
+                this._selectedProfile = profileName;
+                ProfileChanged.Invoke(this, new ProfileNameChangedEventArgs(profileName));
+            }
+        }
+
         private void LoadData()
         {
             if (File.Exists(FilePath) == false) return;
@@ -232,6 +253,15 @@ namespace BindKey.Util
             {
                 MessageBox.Show($"Could not save to file {FilePath}.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+    }
+
+    internal class ProfileNameChangedEventArgs : EventArgs
+    {
+        public string NewProfileName { get; }
+        public ProfileNameChangedEventArgs(string newProfileName)
+        {
+            this.NewProfileName = newProfileName;
         }
     }
 }

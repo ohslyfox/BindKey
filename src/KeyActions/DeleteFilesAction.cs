@@ -83,7 +83,7 @@ namespace BindKey.KeyActions
             }
             catch
             {
-                BindKey.GetInstance().ShowBalloonTip("Error", "Could not delete file(s).", ToolTipIcon.Error);
+                BindKey.ShowBalloonTip("Error", "Could not delete file(s).", ToolTipIcon.Error);
             }
         }
 
