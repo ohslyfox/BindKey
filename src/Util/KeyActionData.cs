@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace BindKey.Util
 {
@@ -171,49 +172,32 @@ namespace BindKey.Util
             if (ProfileNames.Contains(profileName))
             {
                 this._selectedProfile = profileName;
-                ProfileChanged.Invoke(this, new ProfileNameChangedEventArgs(profileName));
+                ProfileChanged?.Invoke(this, new ProfileNameChangedEventArgs(profileName));
             }
         }
 
         private void LoadData()
         {
             if (File.Exists(FilePath) == false) return;
-
             try
             {
-                StreamReader sr = new StreamReader(FilePath);
-                string rawText = sr.ReadToEnd();
-                sr.Close();
-
-                rawText = SecretIO.GetInstance().Decrypt(rawText);
-                string[] lines = rawText.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-                if (lines.Length > 0)
+                string rawText = ReadAndDecryptSaveFile(FilePath);
+                XDocument doc = XDocument.Parse(rawText);
+                
+                foreach (XElement profile in doc.Descendants("Profile"))
                 {
-                    for (int i = 1; i < lines.Length; i++)
+                    string profileName = profile.Element("Name").Value;
+                    var actionMap = GetOrCreateProfileMap(profileName);
+                    
+                    foreach (XElement action in profile.Descendants("Action"))
                     {
-                        List<string> items = DefaultKeyAction.REGEX_DELIMITER.Split(lines[i]).ToList();
-                        string profileName = items[0];
+                        var propDict = action.Descendants("Property").ToDictionary(k => k.Element("PropertyName").Value,
+                                                                                   v => v.Element("PropertyValue").Value);
 
-                        if (this.ProfileMap.TryGetValue(profileName, out var currentActionMap) == false)
-                        {
-                            ProfileMap[profileName] = currentActionMap = new Dictionary<string, IKeyAction>();
-                        }
-
-                        var propDict = items.GetRange(1, items.Count - 1)
-                                            .Select(s => s.Split(',').ToList())
-                                            .ToDictionary(k => k[0], v => string.Join(",", v.GetRange(1, v.Count - 1)));
-                        if (propDict.Count > 0)
-                        {
-                            IKeyAction action = KeyActionFactory.GetKeyActionFromPropertyMap(propDict);
-                            if (action != null)
-                            {
-                                currentActionMap[action.GUID] = action;
-                            }
-                        }
+                        LoadSingleAction(actionMap, propDict);
                     }
-
-                    this.SelectedProfile = lines[0];
                 }
+                this.SelectedProfile = doc.Descendants("SelectedProfile").First().Value;
             }
             catch
             {
@@ -223,36 +207,103 @@ namespace BindKey.Util
             }
         }
 
+        private Dictionary<string, IKeyAction> GetOrCreateProfileMap(string profileName)
+        {
+            if (this.ProfileMap.TryGetValue(profileName, out var currentActionMap) == false)
+            {
+                ProfileMap[profileName] = currentActionMap = new Dictionary<string, IKeyAction>();
+            }
+            return currentActionMap;
+        }
+
+        private void LoadSingleAction(Dictionary<string, IKeyAction> actionMap, Dictionary<string, string> propDict)
+        {
+            try
+            {
+                if (propDict.Count > 0)
+                {
+                    IKeyAction ka = KeyActionFactory.GetKeyActionFromPropertyMap(propDict);
+                    if (ka != null)
+                    {
+                        actionMap[ka.GUID] = ka;
+                    }
+                }
+            }
+            catch
+            {
+                throw new Exception("Failed to load single action.");
+            }
+        }
+
+        private string ReadAndDecryptSaveFile(string filePath)
+        {
+            string rawText = string.Empty;
+            using (StreamReader sr = new StreamReader(filePath))
+            {
+                rawText = sr.ReadToEnd();
+                sr.Close();
+            }
+
+            return SecretIO.GetInstance().Decrypt(rawText);
+        }
+
         public void SaveData()
         {
             try
             {
-                string rawText = string.Empty;
-                rawText += $"{SelectedProfile}{Environment.NewLine}";
-                foreach (var kvp in ProfileMap)
-                {
-                    if (kvp.Value.Count > 0)
-                    {
-                        foreach (var actionMapKvp in kvp.Value)
-                        {
-                            rawText += $"{kvp.Key}{DefaultKeyAction.DELIMITER}{actionMapKvp.Value.SaveString}{Environment.NewLine}";
-                        }
-                    }
-                    else
-                    {
-                        rawText += kvp.Key;
-                    }
-                }
-                rawText = SecretIO.GetInstance().Encrypt(rawText);
+                string saveText = GetXMLSaveString();
+                saveText = SecretIO.GetInstance().Encrypt(saveText);
 
                 StreamWriter sw = File.CreateText(FilePath);
-                sw.Write(rawText);
+                sw.Write(saveText);
                 sw.Close();
             }
             catch
             {
                 MessageBox.Show($"Could not save to file {FilePath}.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private string GetXMLSaveString()
+        {
+            string res = null;
+            try
+            {
+                XDocument doc = new XDocument();
+
+                XElement root = new XElement("SaveFile");
+                doc.Add(root);
+
+                XElement selectedProfile = new XElement("SelectedProfile", this.SelectedProfile);
+                root.Add(selectedProfile);
+
+                foreach (var kvp in this.ProfileMap)
+                {
+                    XElement profile = new XElement("Profile",
+                                       new XElement("Name", kvp.Key));
+
+                    foreach (var action in kvp.Value.Values)
+                    {
+                        XElement act = new XElement("Action");
+                        XElement properties = new XElement("Properties");
+                        foreach (var prop in action.Properties)
+                        {
+                            properties.Add(new XElement("Property",
+                                           new XElement("PropertyName", prop.Key),
+                                           new XElement("PropertyValue", prop.Value)));
+                        }
+                        act.Add(properties);
+                        profile.Add(act);
+                    }
+                    root.Add(profile);
+                }
+                res = doc.ToString();
+            }
+            catch (Exception e)
+            {
+                BindKey.ShowBalloonTip("BindKey", e.Message, ToolTipIcon.Error);
+            }
+            return res;
         }
     }
 

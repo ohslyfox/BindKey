@@ -32,11 +32,11 @@ namespace BindKey.KeyActions
             }
         }
 
-        protected override Dictionary<string, string> ItemsToSave
+        public override Dictionary<string, string> Properties
         {
             get
             {
-                var res = base.ItemsToSave;
+                var res = base.Properties;
                 res[nameof(FilePath)] = FilePath;
                 res[nameof(AsAdmin)] = AsAdmin.ToString();
                 return res;

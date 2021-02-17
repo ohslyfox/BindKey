@@ -31,11 +31,11 @@ namespace BindKey.KeyActions
         public string ProcessName { get; }
         public FocusType ActionToTake { get; }
 
-        protected override Dictionary<string, string> ItemsToSave
+        public override Dictionary<string, string> Properties
         {
             get
             {
-                var res = base.ItemsToSave;
+                var res = base.Properties;
                 res[nameof(ProcessName)] = this.ProcessName;
                 res[nameof(ActionToTake)] = this.ActionToTake.GetDescription();
                 return res;

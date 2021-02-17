@@ -12,11 +12,11 @@ namespace BindKey.KeyActions
         public override ActionTypes Type => ActionTypes.CycleProfile;
         public bool IsForward { get; }
 
-        protected override Dictionary<string, string> ItemsToSave
+        public override Dictionary<string, string> Properties
         {
             get
             {
-                var res = base.ItemsToSave;
+                var res = base.Properties;
                 res[nameof(IsForward)] = IsForward.ToString();
                 return res;
             }

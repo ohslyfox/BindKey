@@ -293,6 +293,7 @@ namespace BindKey
         private void ProfileComboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             Data.SelectedProfile = ProfileComboBox.Text;
+            notifyIcon1.Text = $"BindKey{(string.IsNullOrWhiteSpace(ProfileComboBox.Text) ? string.Empty : $" - {ProfileComboBox.Text}")}";
             RefreshListAndKeyHooks();
         }
 
@@ -391,7 +392,14 @@ namespace BindKey
 
         private void githubToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/ohslyfox/BindKey");
+            try
+            {
+                System.Diagnostics.Process.Start("https://github.com/ohslyfox/BindKey");
+            }
+            catch (Exception ex)
+            {
+                ShowBalloonTip("BindKey", ex.Message, ToolTipIcon.Error);
+            }
         }
     }
 }

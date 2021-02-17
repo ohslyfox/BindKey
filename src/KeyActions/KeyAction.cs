@@ -3,7 +3,6 @@ using BindKey.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace BindKey.KeyActions
@@ -15,7 +14,7 @@ namespace BindKey.KeyActions
         ActionTypes Type { get; }
         Keys[] Keys { get; }
         string KeyCombo { get; }
-        string SaveString { get; }
+        Dictionary<string, string> Properties { get; }
         string GUID { get; }
         string NextKeyActionGUID { get; }
         bool Enabled { get; set; }
@@ -29,18 +28,16 @@ namespace BindKey.KeyActions
 
     internal abstract class DefaultKeyAction : IKeyAction
     {
-        public const string DELIMITER = "|||||";
         public const int KEY_COUNT = 3;
-        public static readonly Regex REGEX_DELIMITER = new Regex("\\|\\|\\|\\|\\|");
 
-        private Dictionary<string, string> _itemsToSave = null;
-        protected virtual Dictionary<string, string> ItemsToSave
+        private Dictionary<string, string> _properties = null;
+        public virtual Dictionary<string, string> Properties
         {
             get
             {
-                if (_itemsToSave == null)
+                if (_properties == null)
                 {
-                    _itemsToSave = new Dictionary<string, string>()
+                    _properties = new Dictionary<string, string>()
                     {
                         { nameof(Type), Type.ToString() },
                         { nameof(GUID), GUID },
@@ -50,7 +47,7 @@ namespace BindKey.KeyActions
                         { nameof(Keys), string.Join(",", Keys) }
                     };
                 }
-                return _itemsToSave;
+                return _properties;
             }
         }
         
@@ -76,7 +73,6 @@ namespace BindKey.KeyActions
         public bool Enabled { get; set; }
         public bool Pinned { get; set; }
         public Keys[] Keys { get; private set; }
-        public string SaveString { get => string.Join(DELIMITER, ItemsToSave.Select(kvp => $"{kvp.Key},{kvp.Value}")); }
         public string KeyCombo { get => GetKeyCombo(this.Keys, false); }
         public string GUID { get; }
         public string NextKeyActionGUID { get; private set; }
