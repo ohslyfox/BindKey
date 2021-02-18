@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace BindKey.KeyActions
 {
     internal delegate void KeyAction();
-    
+
     internal interface IKeyAction
     {
         ActionTypes Type { get; }
@@ -30,27 +30,22 @@ namespace BindKey.KeyActions
     {
         public const int KEY_COUNT = 3;
 
-        private Dictionary<string, string> _properties = null;
         public virtual Dictionary<string, string> Properties
         {
             get
             {
-                if (_properties == null)
+                return new Dictionary<string, string>()
                 {
-                    _properties = new Dictionary<string, string>()
-                    {
-                        { nameof(Type), Type.ToString() },
-                        { nameof(GUID), GUID },
-                        { nameof(NextKeyActionGUID), NextKeyActionGUID },
-                        { nameof(Enabled), Enabled.ToString() },
-                        { nameof(Pinned), Pinned.ToString() },
-                        { nameof(Keys), string.Join(",", Keys) }
-                    };
-                }
-                return _properties;
+                    { nameof(Type), Type.ToString() },
+                    { nameof(GUID), GUID },
+                    { nameof(NextKeyActionGUID), NextKeyActionGUID },
+                    { nameof(Enabled), Enabled.ToString() },
+                    { nameof(Pinned), Pinned.ToString() },
+                    { nameof(Keys), string.Join(",", Keys) }
+                };
             }
         }
-        
+
         public abstract ActionTypes Type { get; }
         protected abstract void KeyActionProcess();
         public override abstract string ToString();
