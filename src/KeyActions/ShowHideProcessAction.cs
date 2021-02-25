@@ -103,7 +103,7 @@ namespace BindKey.KeyActions
             }
             catch
             {
-                BindKey.ShowBalloonTip("Error", $"Could not {this.ActionToTake.GetDescription()} {this.ProcessName}.", ToolTipIcon.Error);
+                AddMessage("Error", $"Could not {this.ActionToTake.GetDescription()} {this.ProcessName}.", ToolTipIcon.Error);
             }
         }
 
@@ -113,10 +113,12 @@ namespace BindKey.KeyActions
             {
                 ShowWindow(hWnd, 3);
                 SetForegroundWindow(hWnd);
+                AddMessage("Show Hide Process", $"Maximized {this.ProcessName}.", ToolTipIcon.Info);
             }
             else
             {
                 ShowWindow(hWnd, 6);
+                AddMessage("Show Hide Process", $"Minimized {this.ProcessName}.", ToolTipIcon.Info);
             }
         }
 
@@ -125,10 +127,12 @@ namespace BindKey.KeyActions
             if (IsIconic(hWnd))
             {
                 FocusWindow(hWnd);
+                AddMessage("Show Hide Process", $"Focused to {this.ProcessName}.", ToolTipIcon.Info);
             }
             else
             {
                 MinimizeWindow(hWnd);
+                AddMessage("Show Hide Process", $"Minimized {this.ProcessName}.", ToolTipIcon.Info);
             }
         }
 
@@ -136,17 +140,20 @@ namespace BindKey.KeyActions
         {
             ShowWindow(hWnd, 1);
             SetForegroundWindow(hWnd);
+            AddMessage("Show Hide Process", $"Focused to {this.ProcessName}.", ToolTipIcon.Info);
         }
 
         private void MaximizeWindow(IntPtr hWnd)
         {
             ShowWindow(hWnd, 3);
             SetForegroundWindow(hWnd);
+            AddMessage("Show Hide Process", $"Maximized {this.ProcessName}.", ToolTipIcon.Info);
         }
 
         private void MinimizeWindow(IntPtr hWnd)
         {
             ShowWindow(hWnd, 6);
+            AddMessage("Show Hide Process", $"Minimized {this.ProcessName}.", ToolTipIcon.Info);
         }
 
         public override string ToString()

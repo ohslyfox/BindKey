@@ -64,6 +64,7 @@ namespace BindKey.KeyActions
         {
             try
             {
+                int deleteCount = 0;
                 if (Directory.Exists(this.FolderPath))
                 {
                     var files = Directory.GetFiles(this.FolderPath, string.IsNullOrWhiteSpace(this.SearchPattern) ? "*" : this.SearchPattern);
@@ -77,13 +78,15 @@ namespace BindKey.KeyActions
                         if (DateTime.Now > time)
                         {
                             File.Delete(file);
+                            deleteCount++;
                         }
                     }
                 }
+                AddMessage("Delete Files", $"Removed {deleteCount} files from {this.FolderPath}.", ToolTipIcon.Info);
             }
             catch
             {
-                BindKey.ShowBalloonTip("Error", "Could not delete file(s).", ToolTipIcon.Error);
+                AddMessage("Error", "Could not delete file(s).", ToolTipIcon.Error);
             }
         }
 

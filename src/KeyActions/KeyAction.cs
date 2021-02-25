@@ -19,6 +19,7 @@ namespace BindKey.KeyActions
         string NextKeyActionGUID { get; }
         bool Enabled { get; set; }
         bool Pinned { get; set; }
+        bool Notify { get; }
         KeyAction Action { get; }
         IKeyAction NextKeyAction { get; }
         void SetNextAction(IKeyAction action);
@@ -41,7 +42,8 @@ namespace BindKey.KeyActions
                     { nameof(NextKeyActionGUID), NextKeyActionGUID },
                     { nameof(Enabled), Enabled.ToString() },
                     { nameof(Pinned), Pinned.ToString() },
-                    { nameof(Keys), string.Join(",", Keys) }
+                    { nameof(Keys), string.Join(",", Keys) },
+                    { nameof(Notify), Notify.ToString() }
                 };
             }
         }
@@ -67,6 +69,7 @@ namespace BindKey.KeyActions
         public IKeyAction NextKeyAction { get; private set; }
         public bool Enabled { get; set; }
         public bool Pinned { get; set; }
+        public bool Notify { get; }
         public Keys[] Keys { get; private set; }
         public string KeyCombo { get => GetKeyCombo(this.Keys, false); }
         public string GUID { get; }
@@ -88,27 +91,30 @@ namespace BindKey.KeyActions
             this.Keys = options.Keys;
             this.Enabled = options.Enabled;
             this.Pinned = options.Pinned;
+            this.Notify = options.Notify;
             SetNextAction(options.NextAction);
         }
 
         public DefaultKeyAction(Dictionary<string, string> propertyMap)
             : this()
         {
-            try
-            {
-                this.GUID = propertyMap[nameof(GUID)];
-                this.NextKeyActionGUID = propertyMap[nameof(NextKeyActionGUID)];
-                this.Enabled = bool.Parse(propertyMap[nameof(Enabled)]);
-                this.Pinned = bool.Parse(propertyMap[nameof(Pinned)]);
+            this.GUID = propertyMap[nameof(GUID)];
+            this.NextKeyActionGUID = propertyMap[nameof(NextKeyActionGUID)];
+            this.Enabled = bool.Parse(propertyMap[nameof(Enabled)]);
+            this.Pinned = bool.Parse(propertyMap[nameof(Pinned)]);
+            this.Notify = bool.Parse(propertyMap[nameof(Notify)]);
 
-                var keys = propertyMap[nameof(Keys)].Split(',');
-                this.Keys[0] = (Keys)Enum.Parse(typeof(Keys), keys[0], true);
-                this.Keys[1] = (Keys)Enum.Parse(typeof(Keys), keys[1], true);
-                this.Keys[2] = (Keys)Enum.Parse(typeof(Keys), keys[2], true);
-            }
-            catch
+            var keys = propertyMap[nameof(Keys)].Split(',');
+            this.Keys[0] = (Keys)Enum.Parse(typeof(Keys), keys[0], true);
+            this.Keys[1] = (Keys)Enum.Parse(typeof(Keys), keys[1], true);
+            this.Keys[2] = (Keys)Enum.Parse(typeof(Keys), keys[2], true);
+        }
+
+        protected void AddMessage(string title, string message, ToolTipIcon icon)
+        {
+            if (this.Notify)
             {
-                MessageBox.Show("Error", "Failed to create key action. Corrupted save file or bad input.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                BindKey.AddMessage(title, message, icon);
             }
         }
 
@@ -148,6 +154,7 @@ namespace BindKey.KeyActions
                 tempNextAction.Action?.Invoke();
                 tempNextAction = tempNextAction.NextKeyAction;
             }
+            BindKey.NotifyAllMessages();
         }
 
         public void ClearKeyCombo()

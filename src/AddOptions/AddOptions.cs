@@ -22,10 +22,12 @@ namespace BindKey.AddOptions
         public const string CONTROL_ACTION_COMBO_BOX = "ActionComboBox";
         public const string CONTROL_ENABLED = "CheckBoxEnabled";
         public const string CONTROL_PINNED = "CheckBoxPinned";
+        public const string CONTROL_NOTIFY = "CheckBoxNotify";
 
         public abstract ActionTypes Type { get; }
         public bool Enabled { get => (GetControl(CONTROL_ENABLED) as CheckBox).Checked; }
         public bool Pinned { get => (GetControl(CONTROL_PINNED) as CheckBox).Checked; }
+        public bool Notify { get => (GetControl(CONTROL_NOTIFY) as CheckBox).Checked; }
         public Keys[] Keys { get => this.AddForm.Keys; }
         public IKeyAction NextAction { get => this.AddForm.NextAction; }
 
@@ -77,6 +79,7 @@ namespace BindKey.AddOptions
             SetControl<CheckBox>(CONTROL_PINNED, action.Pinned);
             SetControl<CheckBox>(CONTROL_ENABLED, action.Enabled);
             SetControl<ComboBox>(CONTROL_ACTION_COMBO_BOX, action.Type);
+            SetControl<CheckBox>(CONTROL_NOTIFY, action.Notify);
         }
 
         protected Control GetControl(string name)

@@ -84,6 +84,7 @@
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.FocusProcessNameTextBox = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
+            this.CheckBoxNotify = new System.Windows.Forms.CheckBox();
             this.panelProcess.SuspendLayout();
             this.ActionGroupBox.SuspendLayout();
             this.PanelScreenCapture.SuspendLayout();
@@ -150,6 +151,7 @@
             // 
             // ActionGroupBox
             // 
+            this.ActionGroupBox.Controls.Add(this.CheckBoxNotify);
             this.ActionGroupBox.Controls.Add(this.CheckBoxPinned);
             this.ActionGroupBox.Controls.Add(this.ActionComboBox);
             this.ActionGroupBox.Controls.Add(this.NextActionCombo);
@@ -161,12 +163,12 @@
             this.ActionGroupBox.Size = new System.Drawing.Size(248, 85);
             this.ActionGroupBox.TabIndex = 16;
             this.ActionGroupBox.TabStop = false;
-            this.ActionGroupBox.Text = "Action Options";
+            this.ActionGroupBox.Text = "Options";
             // 
             // CheckBoxPinned
             // 
             this.CheckBoxPinned.AutoSize = true;
-            this.CheckBoxPinned.Location = new System.Drawing.Point(182, 0);
+            this.CheckBoxPinned.Location = new System.Drawing.Point(189, 0);
             this.CheckBoxPinned.Name = "CheckBoxPinned";
             this.CheckBoxPinned.Size = new System.Drawing.Size(59, 17);
             this.CheckBoxPinned.TabIndex = 22;
@@ -215,7 +217,7 @@
             this.CheckBoxEnabled.AutoSize = true;
             this.CheckBoxEnabled.Checked = true;
             this.CheckBoxEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CheckBoxEnabled.Location = new System.Drawing.Point(116, 0);
+            this.CheckBoxEnabled.Location = new System.Drawing.Point(70, 0);
             this.CheckBoxEnabled.Name = "CheckBoxEnabled";
             this.CheckBoxEnabled.Size = new System.Drawing.Size(65, 17);
             this.CheckBoxEnabled.TabIndex = 1;
@@ -690,6 +692,18 @@
             this.label11.TabIndex = 0;
             this.label11.Text = "Process Name:";
             // 
+            // CheckBoxNotify
+            // 
+            this.CheckBoxNotify.AutoSize = true;
+            this.CheckBoxNotify.Checked = true;
+            this.CheckBoxNotify.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.CheckBoxNotify.Location = new System.Drawing.Point(135, 0);
+            this.CheckBoxNotify.Name = "CheckBoxNotify";
+            this.CheckBoxNotify.Size = new System.Drawing.Size(53, 17);
+            this.CheckBoxNotify.TabIndex = 23;
+            this.CheckBoxNotify.Text = "Notify";
+            this.CheckBoxNotify.UseVisualStyleBackColor = true;
+            // 
             // Add
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -788,5 +802,6 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ComboBox FocusProcessActionComboBox;
+        private System.Windows.Forms.CheckBox CheckBoxNotify;
     }
 }

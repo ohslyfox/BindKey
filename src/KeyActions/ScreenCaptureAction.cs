@@ -91,10 +91,12 @@ namespace BindKey.KeyActions
 
                 bmp.Save(Path.Combine(FolderPath, name) + ".png");
                 Clipboard.SetImage(bmp);
+
+                AddMessage("Screen Capture", "Screen was captured and copied to clipboard.", ToolTipIcon.Info);
             }
             catch
             {
-                BindKey.ShowBalloonTip("Error", "Could not capture screen region, check folder path.", ToolTipIcon.Error);
+                AddMessage("Error", "Could not capture screen region, check folder path.", ToolTipIcon.Error);
             }
         }
 

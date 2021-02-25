@@ -1,6 +1,8 @@
 ﻿using BindKey.AddOptions;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Management;
 using System.Windows.Forms;
 
 namespace BindKey.KeyActions
@@ -44,16 +46,65 @@ namespace BindKey.KeyActions
             try
             {
                 Process[] processes = Process.GetProcessesByName(ProcessName);
+                int instancesKilled = 0;
                 foreach (Process process in processes)
                 {
                     process.Kill();
+                    if (process.HasExited)
+                    {
+                        instancesKilled++;
+                    }
+                    /*if (process.HasExited == false)
+                    {
+                        process.Kill();
+                        process.WaitForExit(1000);
+                        
+                        if (process.HasExited == false)
+                        {
+                            KillChildren(process.Id);
+                        }
+
+                        if (process.HasExited == false)
+                        {
+                            process.Kill();
+                            process.WaitForExit(500);
+                        }
+
+                        if (process.HasExited)
+                        {
+                            instancesKilled++;
+                        }
+                    }*/
+                }
+
+                AddMessage("Kill Process Action", $"Killed {instancesKilled} of {processes.Length} instances of {ProcessName}.", ToolTipIcon.Info);
+            }
+            catch
+            {
+                AddMessage("Error", "Could not kill or start process.", ToolTipIcon.Error);
+            }
+        }
+
+        /*private void KillChildren(int pID)
+        {
+            try
+            {
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher($"SELECT * FROM WIN32_PROCESS WHERE PARENTPROCESSID={pID}");
+                ManagementObjectCollection processes = searcher.Get();
+                foreach (var mo in processes)
+                {
+                    var proc = Process.GetProcessById(Convert.ToInt32(mo["ProcessID"]));
+                    if (proc != null && proc.HasExited == false)
+                    {
+                        proc.Kill();
+                    }
                 }
             }
             catch
             {
                 BindKey.ShowBalloonTip("Error", "Could not kill or start process.", ToolTipIcon.Error);
             }
-        }
+        }*/
 
         public override string ToString()
         {
