@@ -195,7 +195,7 @@ namespace BindKey
                 HookManager.CleanHook();
                 AddForm = new Add(Data, selectedAction);
                 AddForm.StartPosition = FormStartPosition.Manual;
-                AddForm.Location = new Point((this.Location.X + this.Width / 2) - Add.DIMENSIONS_DEFAULT.X / 2, (this.Location.Y + this.Height / 2));
+                AddForm.Location = new Point((this.Location.X + this.Width / 2) - Add.DIMENSIONS_DEFAULT.X / 2, this.Location.Y);
                 AddForm.FormClosed += new FormClosedEventHandler(AddFormClosed);
                 AddForm.Show();
             }
@@ -226,7 +226,7 @@ namespace BindKey
             else
             {
                 GlobalDisable = false;
-                RefreshListAndKeyHooks();
+                AddListeners();
                 disableAllToolStripMenuItem.Text = "Disable All";
             }
         }

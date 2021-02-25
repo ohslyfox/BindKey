@@ -138,8 +138,8 @@ namespace BindKey
             this.KeyPicker = new PickKeyCombo(this);
             this.Grabber = new ScreenGrabber(this);
             var availableNextActions = selectedAction == null ?
-                                       Data.SelectedActionList.Where(ka => !ka.Pinned) :
-                                       Data.SelectedActionList.Where(ka => KeyActionMeetsDisplayCriteria(ka, selectedAction));
+                                       Data.SelectedActionList :
+                                       Data.SelectedActionList.Where(ka => KeyActionMeetsDisplayCriteria(ka));
 
             InitializeComponent();
             SetDefaultDimensionsAndLocations();
@@ -149,11 +149,11 @@ namespace BindKey
             RefreshProcessListView();
         }
 
-        private bool KeyActionMeetsDisplayCriteria(IKeyAction ka, IKeyAction selectedAction)
+        private bool KeyActionMeetsDisplayCriteria(IKeyAction ka)
         {
             var temp = ka;
 
-            if (selectedAction.Pinned && !ka.Pinned) return false;
+            if (this.LocalAction.Pinned && !ka.Pinned) return false;
             while (temp != null)
             {
                 if (temp.GUID == LocalActionGUID || temp.NextKeyActionGUID == LocalActionGUID)
@@ -284,7 +284,7 @@ namespace BindKey
                         }
                     }
                 }
-                newAction.Pinned = CheckBoxPinned.Checked == false;
+                newAction.Pinned = !newAction.Pinned;
                 Data.PinUnpinKeyAction(newAction);
                 this.Close();
                 this.Dispose();

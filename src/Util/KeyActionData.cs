@@ -183,12 +183,13 @@ namespace BindKey.Util
             {
                 string rawText = ReadAndDecryptSaveFile(FilePath);
                 XDocument doc = XDocument.Parse(rawText);
-                
+
+                List<IKeyAction> pinnedActions = GetPinnedActionsFromXDoc(doc);
                 foreach (XElement profile in doc.Descendants("Profile"))
                 {
                     string profileName = profile.Element("Name").Value;
-                    var actionMap = GetOrCreateProfileMap(profileName);
-                    
+                    var actionMap = GetOrCreateProfileMap(profileName, pinnedActions);
+
                     foreach (XElement action in profile.Descendants("Action"))
                     {
                         var propDict = action.Descendants("Property").ToDictionary(k => k.Element("PropertyName").Value,
@@ -207,11 +208,31 @@ namespace BindKey.Util
             }
         }
 
-        private Dictionary<string, IKeyAction> GetOrCreateProfileMap(string profileName)
+        private List<IKeyAction> GetPinnedActionsFromXDoc(XDocument doc)
+        {
+            List<IKeyAction> res = new List<IKeyAction>();
+            try
+            {
+                foreach (XElement action in doc.Descendants("PinnedActions").First().Descendants("Action"))
+                {
+                    var propDict = action.Descendants("Property").ToDictionary(k => k.Element("PropertyName").Value,
+                                                                               v => v.Element("PropertyValue").Value);
+                    res.Add(KeyActionFactory.GetKeyActionFromPropertyMap(propDict));
+                }
+            }
+            catch
+            {
+                throw new Exception("");
+            }
+            return res;
+        }
+
+        private Dictionary<string, IKeyAction> GetOrCreateProfileMap(string profileName, List<IKeyAction> pinnedActions)
         {
             if (this.ProfileMap.TryGetValue(profileName, out var currentActionMap) == false)
             {
-                ProfileMap[profileName] = currentActionMap = new Dictionary<string, IKeyAction>();
+                ProfileMap[profileName] = currentActionMap = pinnedActions.ToDictionary(k => k.GUID, v => v);
+
             }
             return currentActionMap;
         }
@@ -277,23 +298,21 @@ namespace BindKey.Util
                 XElement selectedProfile = new XElement("SelectedProfile", this.SelectedProfile);
                 root.Add(selectedProfile);
 
+                XElement pinnedActions = new XElement("PinnedActions");
+                foreach(var action in PinnedActions)
+                {
+                    pinnedActions.Add(GetXMLElementFromKeyAction(action));
+                }
+                root.Add(pinnedActions);
+
                 foreach (var kvp in this.ProfileMap)
                 {
                     XElement profile = new XElement("Profile",
                                        new XElement("Name", kvp.Key));
 
-                    foreach (var action in kvp.Value.Values)
+                    foreach (var action in kvp.Value.Values.Where(ka => ka.Pinned == false))
                     {
-                        XElement act = new XElement("Action");
-                        XElement properties = new XElement("Properties");
-                        foreach (var prop in action.Properties)
-                        {
-                            properties.Add(new XElement("Property",
-                                           new XElement("PropertyName", prop.Key),
-                                           new XElement("PropertyValue", prop.Value)));
-                        }
-                        act.Add(properties);
-                        profile.Add(act);
+                        profile.Add(GetXMLElementFromKeyAction(action));
                     }
                     root.Add(profile);
                 }
@@ -303,6 +322,20 @@ namespace BindKey.Util
             {
                 BindKey.ShowBalloonTip("BindKey", e.Message, ToolTipIcon.Error);
             }
+            return res;
+        }
+
+        private XElement GetXMLElementFromKeyAction(IKeyAction action)
+        {
+            XElement res = new XElement("Action");
+            XElement properties = new XElement("Properties");
+            foreach (var prop in action.Properties)
+            {
+                properties.Add(new XElement("Property",
+                               new XElement("PropertyName", prop.Key),
+                               new XElement("PropertyValue", prop.Value)));
+            }
+            res.Add(properties);
             return res;
         }
     }
