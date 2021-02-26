@@ -60,7 +60,7 @@ namespace BindKey.KeyActions
             }
             catch
             {
-                AddMessage("Error", $"BindKey was unable to start process \"{this.FilePath}\"", ToolTipIcon.Error);
+                AddMessage("Error", $"Failed to start process \"{this.FilePath}\".", ToolTipIcon.Error);
             }
         }
 

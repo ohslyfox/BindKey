@@ -60,7 +60,7 @@ namespace BindKey.KeyActions
                 }
                 data.SelectedProfile = names[newIndex];
              
-                AddMessage("BindKey", $"Cycled to profile: {names[newIndex]}", ToolTipIcon.Info);
+                AddMessage("Cycle Profile", $"Cycled to: {names[newIndex]}", ToolTipIcon.Info);
             }
             catch (Exception e)
             {
