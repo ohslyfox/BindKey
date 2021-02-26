@@ -14,6 +14,7 @@ namespace BindKey
         private KeyActionData Data { get; }
         private Add AddForm { get; set; }
         private Profile ProfileForm { get; set; }
+        private Queue<NotificationMessage> MessageQueue { get; }
         private bool GlobalDisable { get; set; }
 
         private static BindKey SingletonInstance = null;
@@ -31,6 +32,7 @@ namespace BindKey
             InitializeComponent();
             this.GlobalDisable = false;
             this.Data = new KeyActionData(filePath);
+            this.MessageQueue = new Queue<NotificationMessage>();
             this.RefreshListAndKeyHooks();
             this.RefreshProfileList();
             this.FormClosing += new FormClosingEventHandler(CloseButtonClicked);
@@ -38,9 +40,56 @@ namespace BindKey
             SingletonInstance = this;
         }
 
+        private readonly struct NotificationMessage
+        {
+            public string Title { get; }
+            public string Message { get; }
+            public ToolTipIcon Icon { get; }
+
+            public NotificationMessage(string title, string message, ToolTipIcon icon)
+            {
+                this.Title = title;
+                this.Message = message;
+                this.Icon = icon;
+            }
+        }
         public static void ShowBalloonTip(string title, string message, ToolTipIcon icon)
         {
             GetInstance().notifyIcon1.ShowBalloonTip(1250, title, message, icon);
+        }
+
+        private static void ShowBalloonTip(NotificationMessage message)
+        {
+            ShowBalloonTip(message.Title, message.Message, message.Icon);
+        }
+
+        public static void AddMessage(string title, string message, ToolTipIcon icon)
+        {
+            GetInstance().MessageQueue.Enqueue(new NotificationMessage(title, message, icon));
+        }
+
+        private void NotificationClosedHandler(object sender, EventArgs e)
+        {
+            if (this.MessageQueue.Any())
+            {
+                var message = this.MessageQueue.Dequeue();
+                ShowBalloonTip(message);
+            }
+            else
+            {
+                this.notifyIcon1.BalloonTipClosed -= NotificationClosedHandler;
+            }
+        }
+
+        public static void NotifyAllMessages()
+        {
+            var instance = GetInstance();
+            if (instance.MessageQueue.Any())
+            {
+                instance.notifyIcon1.BalloonTipClosed += instance.NotificationClosedHandler;
+                var message = instance.MessageQueue.Dequeue();
+                ShowBalloonTip(message);
+            }
         }
 
         private void RefreshListAndKeyHooks()

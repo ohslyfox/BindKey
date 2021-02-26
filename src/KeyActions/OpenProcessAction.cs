@@ -55,10 +55,12 @@ namespace BindKey.KeyActions
                 }
                 process.StartInfo.FileName = FilePath;
                 process.Start();
+
+                AddMessage("Open Process", $"Process {this.FilePath} was started.", ToolTipIcon.Info);
             }
             catch
             {
-                BindKey.ShowBalloonTip("Error", $"BindKey was unable to start process \"{this.FilePath}\"", ToolTipIcon.Error);
+                AddMessage("Error", $"Failed to start process \"{this.FilePath}\".", ToolTipIcon.Error);
             }
         }
 

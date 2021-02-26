@@ -1,6 +1,8 @@
 ﻿using BindKey.AddOptions;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Management;
 using System.Windows.Forms;
 
 namespace BindKey.KeyActions
@@ -44,14 +46,23 @@ namespace BindKey.KeyActions
             try
             {
                 Process[] processes = Process.GetProcessesByName(ProcessName);
+                int instancesKilled = 0;
+
                 foreach (Process process in processes)
                 {
                     process.Kill();
+                    process.WaitForExit(1000);
+                    if (process.HasExited)
+                    {
+                        instancesKilled++;
+                    }
                 }
+
+                AddMessage("Kill Process Action", $"Killed {instancesKilled} of {processes.Length} instances of {ProcessName}.", ToolTipIcon.Info);
             }
             catch
             {
-                BindKey.ShowBalloonTip("Error", "Could not kill or start process.", ToolTipIcon.Error);
+                AddMessage("Error", $"Failed to kill process: {ProcessName}.", ToolTipIcon.Error);
             }
         }
 
